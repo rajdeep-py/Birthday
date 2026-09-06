@@ -1,0 +1,6 @@
+{
+  "name": "Happy Birthday, Sunflower 🌻",
+  "description": "A private digital love letter, interactive scrapbook, memory archive, and emotional journey.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
