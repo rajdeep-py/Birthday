@@ -647,3 +647,141 @@ export function HugSlide({ onUnlock, onNext }: { onUnlock: () => void, onNext: (
     </div>
   );
 }
+
+export function SituationalSlide({ index }: { index: number }) {
+  const situation = config.situations?.[index];
+  const [hearts, setHearts] = useState<{ id: number; x: number; y: number; emoji: string }[]>([]);
+  const [reactions, setReactions] = useState(0);
+
+  if (!situation) return null;
+
+  const handlePhotoTap = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const id = Date.now();
+    const emojis = ['💖', '✨', '🌻', '🥰', '🥺', '❤️', '🌸', '💕'];
+    setHearts(prev => [
+      ...prev.slice(-5),
+      {
+        id,
+        x: -25 + Math.random() * 50,
+        y: -35 - Math.random() * 25,
+        emoji: emojis[Math.floor(Math.random() * emojis.length)],
+      },
+    ]);
+    setTimeout(() => {
+      setHearts(prev => prev.filter(h => h.id !== id));
+    }, 1100);
+  };
+
+  const handleReactionClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setReactions(c => c + 1);
+    handlePhotoTap(e);
+  };
+
+  return (
+    <div className="w-full flex flex-col items-center justify-center px-2 py-1 select-none">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.94, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-[340px] sm:max-w-[365px] bg-white/92 backdrop-blur-md rounded-2xl p-3.5 sm:p-4 border border-rose-100/90 shadow-[0_16px_42px_-12px_rgba(225,29,72,0.16)] flex flex-col items-center pointer-events-auto relative text-center"
+      >
+        {/* Top Situation Pill Badge */}
+        <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-rose-50 border border-rose-200/80 text-[9px] sm:text-[10px] font-sans tracking-[0.18em] uppercase font-bold text-rose-700 mb-1.5 shadow-2xs">
+          <Sparkles className="w-2.5 h-2.5 text-rose-500" />
+          <span>{situation.badge}</span>
+        </div>
+
+        {/* Catchy Relatable Title */}
+        <h3 className="font-serif text-[17px] sm:text-[18.5px] font-semibold text-gray-900 leading-tight mb-2 px-1">
+          "{situation.title}"
+        </h3>
+
+        {/* Interactive Photo Frame */}
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={handlePhotoTap}
+          className="w-full h-40 sm:h-48 rounded-xl overflow-hidden shadow-md border-2 border-white relative group cursor-pointer bg-rose-50"
+        >
+          {/* Subtle Washi Tape Accent */}
+          <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-16 h-4 bg-amber-100/80 border-b border-amber-200/50 shadow-2xs rotate-1 z-20 backdrop-blur-xs rounded-xs pointer-events-none" />
+
+          {/* Floating Emojis / Hearts on Photo Tap */}
+          <AnimatePresence>
+            {hearts.map(h => (
+              <motion.span
+                key={h.id}
+                initial={{ opacity: 1, scale: 0.4, x: 0, y: 0 }}
+                animate={{ opacity: 0, scale: 1.4, x: h.x, y: h.y }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none text-2xl z-30 filter drop-shadow-xs"
+              >
+                {h.emoji}
+              </motion.span>
+            ))}
+          </AnimatePresence>
+
+          {/* Individual Photo */}
+          <img
+            src={situation.photo}
+            alt={situation.caption || situation.title}
+            className="w-full h-full object-cover object-[center_20%] group-hover:scale-105 transition-transform duration-700 ease-out"
+          />
+
+          {/* Photo Bottom Caption Gradient Strip */}
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent p-2 pt-4 flex items-end justify-between pointer-events-none">
+            <span className="text-[10.5px] font-serif italic text-white/95 truncate drop-shadow-xs max-w-[70%]">
+              {situation.caption}
+            </span>
+            <span className="text-[9px] font-sans text-rose-200 font-medium px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-xs border border-white/20">
+              Tap her ❤️
+            </span>
+          </div>
+        </motion.div>
+
+        {/* The Scene & The Truth Card */}
+        <div className="w-full bg-gradient-to-b from-rose-50/70 to-pink-50/40 rounded-xl p-2.5 sm:p-3 border border-rose-100/70 mt-2 space-y-1.5 text-left">
+          <p className="text-[11.5px] sm:text-[12px] font-serif text-gray-700 leading-snug italic">
+            <span className="font-sans font-semibold text-rose-800 not-italic text-[10px] tracking-wider uppercase mr-1">The Scene:</span>
+            "{situation.situation}"
+          </p>
+
+          <div className="bg-white/80 rounded-lg p-2 border border-rose-100/60">
+            <p className="text-[11px] sm:text-[11.5px] font-sans text-rose-950 font-medium leading-snug">
+              <span className="text-rose-600 font-bold mr-1">My Heart:</span>
+              {situation.reality}
+            </p>
+          </div>
+        </div>
+
+        {/* Meter / Vibe Bar */}
+        <div className="w-full flex items-center justify-between text-[9.5px] sm:text-[10px] font-sans bg-white/80 border border-rose-100/80 rounded-lg px-2.5 py-1 text-gray-600 mt-1.5 shadow-2xs">
+          <span className="font-medium text-gray-500">{situation.meter.label}</span>
+          <span className="font-semibold text-rose-700">{situation.meter.value}</span>
+        </div>
+
+        {/* Bottom Inside Joke & Interactive Reaction Button */}
+        <div className="w-full mt-2 flex items-center justify-between gap-1.5">
+          <span className="text-[9.5px] sm:text-[10px] font-sans text-rose-800 bg-rose-100/80 border border-rose-200/50 px-2.5 py-1 rounded-full font-medium truncate max-w-[50%] shadow-2xs" title={situation.insideJoke}>
+            {situation.insideJoke}
+          </span>
+
+          <button
+            onClick={handleReactionClick}
+            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white text-[10px] sm:text-[10.5px] font-sans font-medium shadow-xs hover:shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer select-none shrink-0"
+          >
+            <span>{situation.reactionLabel}</span>
+            {reactions > 0 && (
+              <span className="bg-white/25 px-1 rounded-full text-[9px] font-bold">
+                +{reactions}
+              </span>
+            )}
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}

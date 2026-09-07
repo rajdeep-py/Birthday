@@ -1,12 +1,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { config } from '../config';
-import { TextSlide, RiddleSlide, MemorySlide, PhotoSlide, VideoSlide, NoteSlide, HugSlide } from './Slides';
+import { TextSlide, RiddleSlide, MemorySlide, PhotoSlide, VideoSlide, NoteSlide, HugSlide, SituationalSlide } from './Slides';
 import { CatSlideBackground, CatTransitionScamper } from './CatBackground';
 
 type SlideDef = {
   id: string;
-  type: 'text' | 'riddle' | 'memory' | 'photo' | 'video' | 'note' | 'hug';
+  type: 'text' | 'riddle' | 'memory' | 'photo' | 'video' | 'note' | 'hug' | 'situation';
   content?: string;
   align?: 'center' | 'left';
   heading?: boolean;
@@ -156,6 +156,23 @@ export default function StoryDeck() {
     });
     config.photos.forEach((_, i) => {
       deck.push({ id: `photo-${i}`, type: 'photo', index: i });
+    });
+
+    deck.push({
+      id: 'situations-title',
+      type: 'text',
+      content: "My Favorite Versions of You 🌻",
+      heading: true,
+      subtext: "A classified study of your most dangerous moods & looks"
+    });
+    config.situations?.forEach((_, i) => {
+      deck.push({ id: `situation-${i}`, type: 'situation', index: i });
+    });
+    deck.push({
+      id: 'situations-end',
+      type: 'text',
+      content: "Whether you're quiet, giggling, petting cats, or stealing my heart in a saree...",
+      subtext: "I fall for every single version of you. Every single day. ❤️"
     });
 
     deck.push({
@@ -432,6 +449,8 @@ export default function StoryDeck() {
         return <VideoSlide index={slide.index!} />;
       case 'note':
         return <NoteSlide index={slide.index!} />;
+      case 'situation':
+        return <SituationalSlide index={slide.index!} />;
       case 'hug':
         return <HugSlide onUnlock={unlockCurrent} onNext={handleForceNext} />;
       default:

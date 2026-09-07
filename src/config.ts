@@ -260,5 +260,113 @@ export const config = {
     }
   ],
 
+  situations: [
+    {
+      id: 1,
+      badge: "SITUATION #01 • RIVER BREEZE & YOU",
+      title: "When the river breeze touches your hair at Bagbazar Ghat...",
+      photo: "/assets/soothing_single.png",
+      caption: "Bagbazar Ghat • Wind in your hair",
+      situation: "Standing quietly by the river Ganga, gently holding your hair against the cool river wind, looking so peaceful and serene.",
+      reality: "The entire city comes to the ghat for the sunset. But for me? The sunset didn't stand a chance against you. You looked like pure poetry brought to life.",
+      meter: {
+        label: "Aesthetic Level",
+        value: "10/10 • Heart Rate: 185 BPM 📈"
+      },
+      insideJoke: "accha re thik ache... keep looking this ethereal, see what happens. ❤️",
+      reactionLabel: "🫠 Melted Completely"
+    },
+    {
+      id: 2,
+      badge: "SITUATION #02 • CAT RADAR ACTIVATED 🐱",
+      title: "When you spot a cat anywhere in existence...",
+      photo: "/assets/cat_lover.png",
+      caption: "Certified Cat Whisperer 🐾",
+      situation: "All human conversations cease immediately. You sit straight on the ground and start whispering fluent baby language to a kitten.",
+      reality: "Official priority list: 1st Cat, 2nd Biriyani, 3rd Art & Craft... Me? Maybe 47th. But watching your face light up like this? I'd bring you twenty cats.",
+      meter: {
+        label: "Cat Magnet",
+        value: "100% • Demoted to Spectator: Yes 🐾"
+      },
+      insideJoke: "Meow! (He literally talks about you 24/7 🙄❤️)",
+      reactionLabel: "🐾 Cats > Everything"
+    },
+    {
+      id: 3,
+      badge: "SITUATION #03 • THE SAREE HAZARD 👑",
+      title: "When you wear a saree and step into the sunlight...",
+      photo: "/assets/cute_pic.png",
+      caption: "Golden hour royalty by the river",
+      situation: "Draped in that blue and black saree, golden hour sunlight kissing your face, standing by the river with that shy, proud little smile.",
+      reality: "It should be an actual crime to look this breathtaking in broad daylight. How was I supposed to breathe or form a single coherent sentence?!",
+      meter: {
+        label: "Danger Level",
+        value: "Fatal to my heart ⚠️ • Royal Vibe: Peak"
+      },
+      insideJoke: "chupp... don't pretend you didn't know you stole the whole show 🤭",
+      reactionLabel: "👑 Certified Queen"
+    },
+    {
+      id: 4,
+      badge: "SITUATION #04 • FATAL CLOSE-UP ATTACK 📸",
+      title: "When you take that close-up selfie with the nose pin...",
+      photo: "/assets/selfie.png",
+      caption: "The smile that conquered my world",
+      situation: "Full screen occupied by that golden nath, those sparkling eyes, and those dangerously squishable chubby cheeks smiling straight into my soul.",
+      reality: "My brain short-circuits instantly. One look at this smile and every ounce of worry or fatigue from my day evaporates. My absolute favorite view in the universe.",
+      meter: {
+        label: "Squish Factor",
+        value: "1000/10 • Peace Restored: 100% ✨"
+      },
+      insideJoke: "Those cheeks are under 24/7 squish warranty. No refunds. 🥹",
+      reactionLabel: "🤏 Squish Cheeks Now"
+    },
+    {
+      id: 5,
+      badge: "SITUATION #05 • THE QUIET SOUL HOURS 🌙",
+      title: "When you go quiet and think nobody notices...",
+      photo: "/assets/soothing_single.png",
+      caption: "A quiet heart with a universe inside",
+      situation: "Looking away into the distance, holding your thoughts inside, choosing silence because you don't want to explain or be a burden to anyone.",
+      reality: "You never need to pretend with me. I feel your silence the moment it starts. And I will always, always sit right beside you until the heavy air clears.",
+      meter: {
+        label: "Safe Space",
+        value: "Guaranteed • Solitude: Never Alone 🫂"
+      },
+      insideJoke: "You don't have to say a single word. I'm right here. Always.",
+      reactionLabel: "🤍 Always Safe With Me"
+    },
+    {
+      id: 6,
+      badge: "SITUATION #06 • TALKING NON-STOP MODE 🗣️",
+      title: "When you get comfortable and start babbling...",
+      photo: "/assets/selfie.png",
+      caption: "When the shy girl turns into a podcast",
+      situation: "Once that introverted wall comes down, words start flying at 300 words per minute. Non-stop stories, cute little rants, and contagious giggles!",
+      reality: "Everyone else thinks you're quiet and reserved. Only I know the energetic, animated chatterbox that blooms when you're happy. It's my favorite song in the world.",
+      meter: {
+        label: "Words / Min",
+        value: "∞ • Happiness Level: Maximum 🌻"
+      },
+      insideJoke: "dherrrr... keep talking, I could listen to you for a lifetime ❤️",
+      reactionLabel: "🎙️ Never Stop Talking"
+    },
+    {
+      id: 7,
+      badge: "SITUATION #07 • BIRIYANI & CRAFT CRUSADE 🎨",
+      title: "When it's Biriyani time or Art & Craft shopping...",
+      photo: "/assets/cute_pic.png",
+      caption: "Pure, unfiltered childlike joy",
+      situation: "The instant the Biriyani aroma hits the table, or when you find fresh drawing pens and craft supplies—pure, unadulterated childlike excitement.",
+      reality: "The way your eyes light up over the things you love is the most contagious, heartwarming sight. I'd give you all the craft supplies and Biriyani in Kolkata just to see you smile like this.",
+      meter: {
+        label: "Joy Level",
+        value: "Peak 🍚🎨 • Protect Her At All Costs"
+      },
+      insideJoke: "Biriyani is life, but don't forget who brings it to you! 🤭❤️",
+      reactionLabel: "✨ Pure Childlike Joy"
+    }
+  ],
+
   birthdayMessage: `Happy Birthday to you. ❤️\n\nI don't know if I can ever properly explain how much you mean to me, but I hope somewhere between all these little memories, riddles and photographs, you felt it.\n\nI love your smile.\n\nI love your chubby cheeks.\n\nI love your eyes.\n\nI love your childishness.\n\nI love how ambitious you are.\n\nI love how you can be stubborn, moody, quiet and then suddenly talk for hours when you're happy.\n\nBut more than all of that, I love the person you are underneath everything.\n\nThe person who trusts me.\n\nThe person who lets me see the parts of her that she doesn't show everyone.\n\nAnd even when you go quiet and don't tell me what's wrong, I hope you always know that I'll notice.\n\nI'll be there.\n\nI hope this year takes you closer to every ambition you've ever had.\n\nI hope you never stop believing in the girl who wants so much from life.\n\nAnd I hope, somewhere along the way, you always remember that there is someone who believes in you too.\n\nHappy Birthday. 🌻❤️\n\nAnd no matter how many birthdays come after this one...\n\nI hope I get to celebrate a lot of them with you.`
 };
