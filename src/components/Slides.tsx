@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { config } from '../config';
-import { Heart, Sparkles, MapPin, Calendar, Quote } from 'lucide-react';
+import { Heart, Sparkles, MapPin, Calendar, Quote, ArrowRight } from 'lucide-react';
 
 export function HeyYouSlide() {
   return (
@@ -499,14 +499,22 @@ export function RiddleSlide({ index, onUnlock, onNext }: { index: number; onUnlo
                 {status === 'correct' ? riddle.successMessage : riddle.wrongMessage}
               </p>
               {status === 'correct' && (
-                <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ repeat: Infinity, duration: 1 }}
-                  className="text-[10px] font-sans tracking-[0.2em] uppercase text-rose-500 mt-1.5 font-semibold"
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.85, y: 6 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onNextRef.current();
+                  }}
+                  className="pointer-events-auto mt-2.5 inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 text-white font-sans text-xs font-semibold tracking-wide shadow-md hover:shadow-lg transition-all cursor-pointer group"
                 >
-                  Next chapter coming... ✨
-                </motion.span>
+                  <Sparkles className="w-3.5 h-3.5 text-rose-200 animate-pulse" />
+                  <span>Continue</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  <span>🌻</span>
+                </motion.button>
               )}
             </motion.div>
           )}
@@ -549,17 +557,43 @@ export function HugSlide({ onUnlock, onNext }: { onUnlock: () => void, onNext: (
   return (
     <div className="w-full flex flex-col items-center px-4 text-center select-none">
       {/* Question */}
-      <p className="font-serif text-2xl sm:text-3xl text-gray-900 mb-10 tracking-tight">
+      <p className="font-serif text-2xl sm:text-3xl text-gray-900 mb-8 tracking-tight">
         What would I give you right now?
       </p>
 
       {step === 0 && (
-        <button
-          onClick={advance}
-          className="pointer-events-auto relative z-30 px-8 py-3.5 bg-white text-gray-800 rounded-full font-sans text-sm tracking-widest uppercase font-semibold shadow-sm hover:shadow-md transition-all border border-rose-200 active:scale-[0.98] cursor-pointer"
-        >
-          Take a guess ❤️
-        </button>
+        <div className="flex flex-col items-center">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={advance}
+            className="pointer-events-auto relative z-30 group inline-flex items-center justify-center p-[2px] rounded-full bg-gradient-to-r from-rose-400 via-pink-400 to-amber-300 shadow-[0_12px_32px_-8px_rgba(244,63,94,0.45)] hover:shadow-[0_16px_36px_-6px_rgba(244,63,94,0.65)] transition-all duration-300 cursor-pointer"
+          >
+            <div className="relative px-8 py-3.5 rounded-full bg-white/95 hover:bg-white transition-colors flex items-center gap-2.5 overflow-hidden">
+              <motion.div
+                animate={{ x: ['-100%', '200%'] }}
+                transition={{ repeat: Infinity, duration: 2.6, ease: "easeInOut" }}
+                className="absolute inset-0 w-1/2 bg-gradient-to-r from-transparent via-rose-200/50 to-transparent skew-x-12 pointer-events-none"
+              />
+              <Sparkles className="w-4 h-4 text-rose-500 animate-pulse" />
+              <span className="font-serif text-[16px] sm:text-[17px] font-semibold text-gray-900 tracking-wide">
+                Take a Guess
+              </span>
+              <span className="text-base group-hover:scale-125 transition-transform duration-300">
+                ❤️
+              </span>
+            </div>
+          </motion.button>
+
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0.6, 1, 0.6] }}
+            transition={{ repeat: Infinity, duration: 2.4 }}
+            className="mt-3 text-[11px] font-sans tracking-wide text-rose-500/90 font-medium"
+          >
+            ✨ Bet you can't guess what it is 🤭
+          </motion.span>
+        </div>
       )}
 
       {step >= 1 && (
@@ -570,20 +604,20 @@ export function HugSlide({ onUnlock, onNext }: { onUnlock: () => void, onNext: (
       )}
 
       {step >= 2 && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-1.5 mb-8">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-1.5 mb-6">
           <p className="font-serif text-xl text-gray-700">A gift?</p>
           <p className="font-sans text-[11px] tracking-[0.2em] uppercase text-red-500 font-bold">Not nearly enough.</p>
         </motion.div>
       )}
 
       {step >= 3 && (
-        <motion.div initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} className="space-y-6">
+        <motion.div initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} className="space-y-5">
           <h2 className="font-serif text-3xl sm:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-rose-600 to-pink-600 font-semibold">
             A really, really long hug.
           </h2>
 
           {/* Pulsing Intertwined Hearts */}
-          <div className="relative flex justify-center items-center h-20">
+          <div className="relative flex justify-center items-center h-16">
             <AnimatePresence>
               {hugHearts.map(h => (
                 <motion.span
@@ -615,34 +649,49 @@ export function HugSlide({ onUnlock, onNext }: { onUnlock: () => void, onNext: (
             </motion.div>
           </div>
 
-          <p className="font-serif text-[16px] sm:text-[17.5px] text-gray-700 italic px-2 leading-relaxed max-w-[320px] mx-auto">
+          <p className="font-serif text-[15.5px] sm:text-[17px] text-gray-700 italic px-2 leading-relaxed max-w-[320px] mx-auto">
             The kind where neither of us has to say a single word. Where the whole world goes completely quiet, and it's just you in my arms.
           </p>
 
-          {/* Interactive Squeeze Button */}
-          <div className="pt-2 flex flex-col items-center gap-3">
-            <button
+          {/* Interactive Squeeze Button & Continue Button */}
+          <div className="pt-2 flex flex-col items-center gap-2.5">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={handleSqueeze}
-              className="pointer-events-auto px-5 py-2 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-sans font-medium hover:bg-rose-100 transition-all active:scale-95 shadow-xs cursor-pointer inline-flex items-center gap-1.5"
+              className="pointer-events-auto px-6 py-2 rounded-full bg-rose-50 hover:bg-rose-100 border border-rose-200/80 text-rose-700 text-xs font-sans font-medium tracking-wide transition-all shadow-xs cursor-pointer inline-flex items-center gap-2"
             >
-              <span>🤗</span>
+              <span className="text-base">🤗</span>
               <span>Squeeze Tighter {squeezeCount > 0 ? `(${squeezeCount})` : ''}</span>
-            </button>
+            </motion.button>
 
-            <p className="text-[10px] font-sans uppercase tracking-[0.2em] text-rose-400 font-semibold animate-pulse">
-              Tap right to continue ➔
-            </p>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={advance}
+              className="pointer-events-auto inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 text-white font-sans text-xs font-semibold tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer group"
+            >
+              <span>Continue into our story</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              <span>🌻</span>
+            </motion.button>
           </div>
         </motion.div>
       )}
 
       {step > 0 && step < 3 && (
-        <button
+        <motion.button
+          initial={{ opacity: 0, scale: 0.9, y: 8 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={advance}
-          className="pointer-events-auto relative z-30 px-8 py-2.5 mt-4 bg-red-50 text-red-800 rounded-full font-sans text-[11px] tracking-[0.2em] uppercase font-bold active:scale-[0.98] border border-red-200/60 cursor-pointer shadow-2xs"
+          className="pointer-events-auto relative z-30 group inline-flex items-center gap-2 px-7 py-3 mt-4 rounded-full bg-gradient-to-r from-[#D92658] via-[#E11D48] to-[#FB7185] text-white font-sans text-xs uppercase tracking-[0.2em] font-bold shadow-[0_10px_25px_-6px_rgba(225,29,72,0.45)] hover:shadow-[0_14px_30px_-5px_rgba(225,29,72,0.6)] transition-all cursor-pointer"
         >
-          Next
-        </button>
+          <Sparkles className="w-3.5 h-3.5 text-rose-200 animate-pulse" />
+          <span>{step === 1 ? "Guess Again" : "Reveal The Truth"}</span>
+          <ArrowRight className="w-3.5 h-3.5 text-white/90 group-hover:translate-x-1 transition-transform" />
+        </motion.button>
       )}
     </div>
   );

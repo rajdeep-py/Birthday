@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { config } from '../config';
 import { TextSlide, RiddleSlide, MemorySlide, PhotoSlide, VideoSlide, NoteSlide, HugSlide, SituationalSlide } from './Slides';
 import { CatSlideBackground, CatTransitionScamper } from './CatBackground';
+import { ChevronLeft, ArrowRight } from 'lucide-react';
 
 type SlideDef = {
   id: string;
@@ -525,6 +526,65 @@ export default function StoryDeck() {
             </motion.div>
           </AnimatePresence>
         </div>
+
+        {/* Modern Aesthetic Floating Navigation Bar */}
+        {!isHeyYouSlide && (
+          <div className="absolute bottom-3 sm:bottom-4 inset-x-0 z-30 flex items-center justify-between px-5 sm:px-6 pointer-events-none select-none">
+            {/* Previous Button */}
+            <motion.button
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.92 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePrev();
+              }}
+              disabled={currentIndex === 0}
+              className={`pointer-events-auto p-2 rounded-full backdrop-blur-md transition-all cursor-pointer ${
+                currentIndex === 0
+                  ? 'opacity-0 pointer-events-none'
+                  : 'bg-white/85 hover:bg-white border border-rose-200/70 text-gray-700 shadow-xs hover:shadow-sm'
+              }`}
+              title="Previous slide"
+            >
+              <ChevronLeft className="w-3.5 h-3.5 text-rose-600" />
+            </motion.button>
+
+            {/* Slide Chapter / Counter Badge */}
+            <div className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md border border-rose-100/80 shadow-2xs text-[10px] font-sans font-medium text-rose-700 tracking-wider">
+              <span>🌻 {currentIndex + 1} / {slides.length} ✨</span>
+            </div>
+
+            {/* Creative Modern Next Button */}
+            <motion.button
+              whileHover={canAdvance() ? { scale: 1.06 } : {}}
+              whileTap={canAdvance() ? { scale: 0.94 } : {}}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleNext();
+              }}
+              disabled={!canAdvance() || currentIndex === slides.length - 1}
+              className={`pointer-events-auto inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-sans text-[11px] font-semibold tracking-wide transition-all cursor-pointer shadow-xs group ${
+                !canAdvance()
+                  ? 'bg-amber-50 text-amber-700 border border-amber-200/80'
+                  : currentIndex === slides.length - 1
+                  ? 'opacity-0 pointer-events-none'
+                  : 'bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-[0_4px_14px_-2px_rgba(244,63,94,0.35)]'
+              }`}
+              title="Next Slide"
+            >
+              <span>
+                {!canAdvance()
+                  ? currentSlide.type === 'hug'
+                    ? 'Tap Hug 🤗'
+                    : 'Pick answer 🌻'
+                  : 'Next'}
+              </span>
+              {canAdvance() && (
+                <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+              )}
+            </motion.button>
+          </div>
+        )}
 
       </div>
     </div>
