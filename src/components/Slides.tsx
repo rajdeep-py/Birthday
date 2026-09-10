@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { config } from '../config';
-import { Heart, Sparkles, MapPin, Calendar, Quote, ArrowRight } from 'lucide-react';
+import { Heart, Sparkles, MapPin, Calendar, Quote, ArrowRight, Lock, PhoneCall } from 'lucide-react';
 
 export function HeyYouSlide() {
   return (
@@ -129,14 +129,17 @@ export function TextSlide({ slide }: { slide: any }) {
         <Quote className="w-6 h-6 text-rose-200/80 mx-auto -mb-1" />
 
         <div className="space-y-3">
-          {slide.content.split('\n').map((line: string, i: number) => (
-            <p
-              key={i}
-              className="font-serif text-[17px] sm:text-[18.5px] text-gray-800 leading-relaxed font-normal"
-            >
-              {line}
-            </p>
-          ))}
+          {slide.content
+            .split('\n')
+            .filter((line: string) => line.trim().length > 0)
+            .map((line: string, i: number) => (
+              <p
+                key={i}
+                className="font-serif text-[17px] sm:text-[18.5px] text-gray-800 leading-relaxed font-normal"
+              >
+                {line}
+              </p>
+            ))}
         </div>
 
         {slide.subtext && (
@@ -845,3 +848,228 @@ export function SituationalSlide({ index }: { index: number }) {
     </div>
   );
 }
+
+export function PromiseSlide({ onUnlock, onNext }: { onUnlock: () => void; onNext: () => void }) {
+  const [promised, setPromised] = useState(false);
+  const [particles, setParticles] = useState<{ id: number; x: number; y: number; emoji: string; scale: number; rotation: number }[]>([]);
+  const [pulseCount, setPulseCount] = useState(0);
+
+  const triggerCelebration = () => {
+    const emojis = ['💖', '🌻', '✨', '🤞', '🤍', '🌸', '💫', '🫂', '🕊️'];
+    const newParticles = Array.from({ length: 24 }).map((_, i) => ({
+      id: Date.now() + i,
+      x: (Math.random() - 0.5) * 260,
+      y: -60 - Math.random() * 180,
+      emoji: emojis[Math.floor(Math.random() * emojis.length)],
+      scale: 0.8 + Math.random() * 0.7,
+      rotation: (Math.random() - 0.5) * 60,
+    }));
+    setParticles(prev => [...prev.slice(-12), ...newParticles]);
+    setTimeout(() => {
+      setParticles(prev => prev.filter(p => !newParticles.some(np => np.id === p.id)));
+    }, 1800);
+  };
+
+  const handleMakePromise = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!promised) {
+      setPromised(true);
+      onUnlock();
+    }
+    setPulseCount(c => c + 1);
+    triggerCelebration();
+  };
+
+  const handleContinue = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onNext();
+  };
+
+  return (
+    <div className="w-full flex flex-col items-center px-3 sm:px-4 text-center select-none relative">
+      {/* Floating Particles Burst */}
+      <AnimatePresence>
+        {particles.map(p => (
+          <motion.span
+            key={p.id}
+            initial={{ opacity: 1, scale: 0.3, x: 0, y: 0, rotate: 0 }}
+            animate={{ opacity: 0, scale: p.scale, x: p.x, y: p.y, rotate: p.rotation }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.6, ease: "easeOut" }}
+            className="absolute text-2xl sm:text-3xl pointer-events-none z-50 filter drop-shadow-md select-none"
+            style={{ top: '45%', left: '50%' }}
+          >
+            {p.emoji}
+          </motion.span>
+        ))}
+      </AnimatePresence>
+
+      {/* Top Floating Badge */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-rose-50/90 border border-rose-200/80 shadow-xs mb-3 backdrop-blur-md"
+      >
+        <Sparkles className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
+        <span className="text-[10px] font-sans tracking-[0.22em] uppercase font-bold text-rose-700">
+          {promised ? "Promise Sealed Forever 🔐" : "Our Sacred Promise • Pinky Swear 🤞"}
+        </span>
+        <Sparkles className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
+      </motion.div>
+
+      {/* Main Glassmorphic Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 16, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-[340px] sm:max-w-[365px] bg-white/85 backdrop-blur-md rounded-2xl p-5 sm:p-6 border border-rose-100/90 shadow-[0_12px_36px_-12px_rgba(225,29,72,0.16)] relative flex flex-col items-center"
+      >
+        {!promised ? (
+          /* UNSEALED STATE */
+          <div className="flex flex-col items-center space-y-4">
+            <motion.h2
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="font-serif text-2xl sm:text-3xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-rose-700 via-pink-600 to-amber-600 leading-tight"
+            >
+              Keep this promise with me?
+            </motion.h2>
+
+            <p className="font-serif text-[15.5px] sm:text-[17px] text-gray-700 leading-relaxed font-normal px-1">
+              Whenever life feels too heavy or quiet, don't face it all alone. Tap below to seal your word.
+            </p>
+
+            {/* Glowing Pinky Promise Emblem with Ripple Animations */}
+            <div className="relative my-2">
+              <motion.div
+                animate={{
+                  scale: [1, 1.28, 1],
+                  opacity: [0.35, 0.08, 0.35],
+                }}
+                transition={{ repeat: Infinity, duration: 2.6, ease: "easeInOut" }}
+                className="absolute inset-0 rounded-full bg-gradient-to-r from-rose-400 to-pink-400 blur-md pointer-events-none"
+              />
+              <motion.div
+                animate={{
+                  rotate: [-3, 3, -3],
+                  scale: [1, 1.05, 1],
+                }}
+                transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                onClick={handleMakePromise}
+                className="relative w-20 h-20 rounded-full bg-gradient-to-tr from-rose-100 via-pink-50 to-amber-100 border-2 border-rose-200/90 shadow-inner flex items-center justify-center text-4xl cursor-pointer hover:scale-110 active:scale-95 transition-transform"
+                title="Tap to seal"
+              >
+                <span className="select-none filter drop-shadow-sm">🤞</span>
+              </motion.div>
+            </div>
+
+            {/* Animated Interactive Button */}
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.94 }}
+              onClick={handleMakePromise}
+              className="pointer-events-auto relative z-30 group inline-flex items-center justify-center p-[2px] rounded-full bg-gradient-to-r from-rose-500 via-pink-500 to-amber-400 shadow-[0_10px_28px_-6px_rgba(244,63,94,0.5)] hover:shadow-[0_14px_34px_-4px_rgba(244,63,94,0.7)] transition-all duration-300 cursor-pointer"
+            >
+              <div className="relative px-7 py-3 rounded-full bg-white/95 group-hover:bg-white transition-colors flex items-center gap-2.5 overflow-hidden">
+                <motion.div
+                  animate={{ x: ['-100%', '200%'] }}
+                  transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
+                  className="absolute inset-0 w-1/2 bg-gradient-to-r from-transparent via-rose-300/40 to-transparent skew-x-12 pointer-events-none"
+                />
+                <Heart className="w-4 h-4 text-rose-500 fill-rose-500 animate-pulse" />
+                <span className="font-serif text-[15.5px] sm:text-[16.5px] font-semibold text-gray-900 tracking-wide">
+                  I Promise You 🤍
+                </span>
+                <span className="text-base group-hover:scale-125 transition-transform duration-300">
+                  🤞
+                </span>
+              </div>
+            </motion.button>
+
+            <motion.span
+              animate={{ opacity: [0.55, 1, 0.55] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="text-[11px] font-sans tracking-wide text-rose-500/90 font-medium"
+            >
+              ✨ Tap to seal it in our hearts forever ✨
+            </motion.span>
+          </div>
+        ) : (
+          /* SEALED PROMISE STATE */
+          <motion.div
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col items-center space-y-4"
+          >
+            {/* Sealed Emblem */}
+            <motion.div
+              initial={{ rotate: -25, scale: 0.6 }}
+              animate={{ rotate: 0, scale: 1 }}
+              transition={{ type: "spring", stiffness: 220, damping: 14 }}
+              onClick={handleMakePromise}
+              className="relative w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 via-pink-500 to-amber-400 p-[3px] shadow-[0_10px_30px_rgba(244,63,94,0.45)] cursor-pointer"
+              title="Tap for more sparkles!"
+            >
+              <div className="w-full h-full rounded-full bg-white flex flex-col items-center justify-center">
+                <motion.span
+                  animate={{ scale: [1, 1.15, 1] }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                  className="text-3xl"
+                >
+                  🔐
+                </motion.span>
+              </div>
+            </motion.div>
+
+            <div className="space-y-1">
+              <h2 className="font-serif text-2xl sm:text-3xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-rose-700 via-red-600 to-pink-600">
+                Promise Sealed.
+              </h2>
+              <p className="font-sans text-[11px] uppercase tracking-[0.2em] font-bold text-rose-600">
+                Etched in my heart forever 🤍
+              </p>
+            </div>
+
+            <p className="font-serif text-[15px] sm:text-[16.5px] text-gray-700 leading-relaxed font-normal px-2">
+              No matter the distance, no matter how many years pass by...
+              I will always answer your call. You never have to worry.
+            </p>
+
+            {/* Reassurance Badge */}
+            <div className="w-full bg-rose-50/90 border border-rose-200/80 rounded-xl p-2.5 flex items-center justify-center gap-2 shadow-2xs">
+              <PhoneCall className="w-4 h-4 text-rose-500 shrink-0" />
+              <span className="font-sans text-[12px] sm:text-[12.5px] font-medium text-rose-800">
+                Always just a phone call away 🫂
+              </span>
+            </div>
+
+            {/* Sparkle More Button + Continue Button */}
+            <div className="pt-2 flex flex-col items-center gap-2.5 w-full">
+              <motion.button
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleMakePromise}
+                className="pointer-events-auto px-5 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 border border-rose-200/80 text-rose-700 text-xs font-sans font-medium tracking-wide transition-all shadow-2xs cursor-pointer inline-flex items-center gap-1.5"
+              >
+                <span>✨ Send more love {pulseCount > 1 ? `(${pulseCount})` : ''}</span>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleContinue}
+                className="pointer-events-auto w-full max-w-[240px] inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 text-white font-sans text-xs font-semibold tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer group"
+              >
+                <span>Continue to Finale</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+      </motion.div>
+    </div>
+  );
+}
+

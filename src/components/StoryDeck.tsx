@@ -1,13 +1,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { config } from '../config';
-import { TextSlide, RiddleSlide, MemorySlide, PhotoSlide, NoteSlide, HugSlide, SituationalSlide } from './Slides';
+import { TextSlide, RiddleSlide, MemorySlide, PhotoSlide, NoteSlide, HugSlide, SituationalSlide, PromiseSlide } from './Slides';
 import { CatSlideBackground, CatTransitionScamper } from './CatBackground';
 import { ChevronLeft, ArrowRight } from 'lucide-react';
 
 type SlideDef = {
   id: string;
-  type: 'text' | 'riddle' | 'memory' | 'photo' | 'note' | 'hug' | 'situation';
+  type: 'text' | 'riddle' | 'memory' | 'photo' | 'note' | 'hug' | 'situation' | 'promise';
   content?: string;
   align?: 'center' | 'left';
   heading?: boolean;
@@ -300,7 +300,7 @@ export default function StoryDeck() {
       type: 'text',
       content: `Happy Birthday,\nMy Sunflower 🌻❤️`,
       heading: true,
-      subtext: "🎂 ❤️ 🌻 🎀 ✨ 🥹"
+      subtext: "Khub khub khub bhalobashi kintu, khub icche korche joriye dhore ekta kopale chumu khai, kintu chaar :)"
     });
 
     const chunks = config.birthdayMessage.split('\n\n');
@@ -312,38 +312,29 @@ export default function StoryDeck() {
       id: 'final-1',
       type: 'text',
       content: "One last promise before we finish...",
-      subtext: "Listen closely ❤️"
+      subtext: "Always remember this 🤍"
     });
     deck.push({
       id: 'final-2',
       type: 'text',
-      content: "You sometimes secretly worry that one day I'll forget you.",
-      subtext: "You think time fades things."
+      content: "Just promise me one thing—\n\nNo matter how distant we become, if life ever gets too heavy, you’ll still feel like you can call me.\n\nI may not be a part of your everyday life, but I’ll always want to know you’re okay.",
+      subtext: "Always just a phone call away 🫂🤍"
+    });
+    deck.push({
+      id: 'final-promise-interactive',
+      type: 'promise',
     });
     deck.push({
       id: 'final-3',
       type: 'text',
-      content: "I won't.",
+      content: `Happy Birthday, Beautiful. 🌻❤️`,
       heading: true,
-      subtext: "Not in this lifetime, not in any other."
+      subtext: "May all your dreams come true ✨"
     });
     deck.push({
       id: 'final-4',
       type: 'text',
-      content: "Not the girl I met.\nNot the girl who trusted me.\nNot the woman you are blooming into.",
-      subtext: "Every chapter of you is sacred."
-    });
-    deck.push({
-      id: 'final-5',
-      type: 'text',
-      content: `Happy Birthday, Beautiful. 🌻❤️`,
-      heading: true,
-      subtext: "May all your dreams come true"
-    });
-    deck.push({
-      id: 'final-6',
-      type: 'text',
-      content: "I love you. Today, tomorrow, and forever.",
+      content: "I love you. Today, tomorrow, and maybe forever? haha, just joking, oboshyoi chirokal!",
       subtext: "Endless love, always yours."
     });
 
@@ -355,6 +346,7 @@ export default function StoryDeck() {
   const canAdvance = () => {
     if (currentSlide.type === 'riddle' && !unlocked[currentIndex]) return false;
     if (currentSlide.type === 'hug' && !unlocked[currentIndex]) return false;
+    if (currentSlide.type === 'promise' && !unlocked[currentIndex]) return false;
     return true;
   };
 
@@ -447,6 +439,8 @@ export default function StoryDeck() {
         return <SituationalSlide index={slide.index!} />;
       case 'hug':
         return <HugSlide onUnlock={unlockCurrent} onNext={handleForceNext} />;
+      case 'promise':
+        return <PromiseSlide onUnlock={unlockCurrent} onNext={handleForceNext} />;
       default:
         return null;
     }
@@ -567,7 +561,9 @@ export default function StoryDeck() {
                 {!canAdvance()
                   ? currentSlide.type === 'hug'
                     ? 'Tap Hug 🤗'
-                    : 'Pick answer 🌻'
+                    : currentSlide.type === 'promise'
+                      ? 'Keep Promise 🤞'
+                      : 'Pick answer 🌻'
                   : 'Next'}
               </span>
               {canAdvance() && (
