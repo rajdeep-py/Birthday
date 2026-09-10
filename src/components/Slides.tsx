@@ -1073,3 +1073,107 @@ export function PromiseSlide({ onUnlock, onNext }: { onUnlock: () => void; onNex
   );
 }
 
+export function CreationSlide({
+  content,
+  image,
+  onNext,
+  clickCount = 0,
+}: {
+  content?: string;
+  image?: string;
+  onNext?: () => void;
+  clickCount?: number;
+}) {
+  const [hearts, setHearts] = useState<{ id: number; x: number; y: number }[]>([]);
+
+  const handleTap = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const id = Date.now();
+    setHearts(prev => [
+      ...prev.slice(-6),
+      { id, x: -20 + Math.random() * 40, y: -20 - Math.random() * 30 },
+    ]);
+    setTimeout(() => {
+      setHearts(prev => prev.filter(h => h.id !== id));
+    }, 1200);
+
+    if (onNext) {
+      onNext();
+    }
+  };
+
+  return (
+    <div
+      className="relative w-full h-full min-h-[500px] sm:min-h-[600px] flex flex-col items-center justify-center overflow-hidden select-none cursor-pointer"
+      onClick={handleTap}
+    >
+      {/* Blurred background ambient image for complete coverage */}
+      <img
+        src={image || "/assets/my_creation.png"}
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover filter blur-xl scale-110 opacity-60 pointer-events-none"
+      />
+
+      {/* Crisp Foreground Full-Screen Image */}
+      <motion.img
+        initial={{ opacity: 0, scale: 0.97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        src={image || "/assets/my_creation.png"}
+        alt="My Creation"
+        className="relative z-10 w-full h-full max-h-[850px] object-contain pointer-events-none drop-shadow-2xl"
+      />
+
+      {/* Floating Hearts on Tap */}
+      <AnimatePresence>
+        {hearts.map(h => (
+          <motion.span
+            key={h.id}
+            initial={{ opacity: 1, scale: 0.4, x: 0, y: 0 }}
+            animate={{ opacity: 0, scale: 1.4, x: h.x, y: h.y }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="absolute z-30 text-3xl pointer-events-none filter drop-shadow-md select-none"
+            style={{ top: '50%', left: '50%' }}
+          >
+            ❤️
+          </motion.span>
+        ))}
+      </AnimatePresence>
+
+      {/* Toast Prompt after 1st click */}
+      <AnimatePresence>
+        {clickCount === 1 && (
+          <motion.div
+            initial={{ opacity: 0, y: -15, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.25 }}
+            className="absolute top-10 inset-x-0 z-30 flex justify-center pointer-events-none px-4"
+          >
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-white text-[12px] font-sans font-medium shadow-xl">
+              <span>Click once more to start over</span>
+              <span className="text-base animate-bounce">🔄</span>
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Transparent Text Banner at the Bottom */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35, duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+        className="absolute bottom-16 sm:bottom-18 inset-x-3 sm:inset-x-5 z-20 flex justify-center pointer-events-auto"
+      >
+        <div className="w-full max-w-[360px] bg-black/60 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-3 shadow-[0_12px_36px_rgba(0,0,0,0.5)] text-center">
+          <p className="font-serif text-[15px] sm:text-[16.5px] text-white/95 font-medium tracking-wide drop-shadow-md leading-snug">
+            {content || "I noticed, I wish u keep it with u forever"}
+          </p>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+

@@ -1,18 +1,19 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { config } from '../config';
-import { TextSlide, RiddleSlide, MemorySlide, PhotoSlide, NoteSlide, HugSlide, SituationalSlide, PromiseSlide } from './Slides';
+import { TextSlide, RiddleSlide, MemorySlide, PhotoSlide, NoteSlide, HugSlide, SituationalSlide, PromiseSlide, CreationSlide } from './Slides';
 import { CatSlideBackground, CatTransitionScamper } from './CatBackground';
 import { ChevronLeft, ArrowRight } from 'lucide-react';
 
 type SlideDef = {
   id: string;
-  type: 'text' | 'riddle' | 'memory' | 'photo' | 'note' | 'hug' | 'situation' | 'promise';
+  type: 'text' | 'riddle' | 'memory' | 'photo' | 'note' | 'hug' | 'situation' | 'promise' | 'creation';
   content?: string;
   align?: 'center' | 'left';
   heading?: boolean;
   index?: number;
   subtext?: string;
+  image?: string;
 };
 
 const stampSunflowerList = [
@@ -337,6 +338,18 @@ export default function StoryDeck() {
       content: "I love you. Today, tomorrow, and maybe forever? haha, just joking, oboshyoi chirokal!",
       subtext: "Endless love, always yours."
     });
+    deck.push({
+      id: 'final-5',
+      type: 'text',
+      content: "HBD again, aro onek bar bolte icche korche, pagol hoye gechi i guess. gelam tahole, tataa",
+      subtext: "Shob shomoy bhalo thakis 🌻🤍"
+    });
+    deck.push({
+      id: 'final-creation',
+      type: 'creation',
+      content: "I noticed, I wish u keep it with u forever",
+      image: "/assets/my_creation.png"
+    });
 
     return deck;
   }, []);
@@ -350,11 +363,40 @@ export default function StoryDeck() {
     return true;
   };
 
+  const [lastSlideClicks, setLastSlideClicks] = useState(0);
+
+  const handleLastSlideTap = () => {
+    setLastSlideClicks(prev => {
+      const nextCount = prev + 1;
+      if (nextCount >= 2) {
+        setDirection(1);
+        setCurrentIndex(0);
+        return 0;
+      }
+      return nextCount;
+    });
+  };
+
+  useEffect(() => {
+    if (lastSlideClicks > 0) {
+      const timer = setTimeout(() => {
+        setLastSlideClicks(0);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [lastSlideClicks]);
+
+  useEffect(() => {
+    setLastSlideClicks(0);
+  }, [currentIndex]);
+
   const handleNext = () => {
     if (!canAdvance()) return;
     if (currentIndex < slides.length - 1) {
       setDirection(1);
       setCurrentIndex(prev => prev + 1);
+    } else if (currentIndex === slides.length - 1) {
+      handleLastSlideTap();
     }
   };
 
@@ -441,6 +483,15 @@ export default function StoryDeck() {
         return <HugSlide onUnlock={unlockCurrent} onNext={handleForceNext} />;
       case 'promise':
         return <PromiseSlide onUnlock={unlockCurrent} onNext={handleForceNext} />;
+      case 'creation':
+        return (
+          <CreationSlide
+            content={slide.content}
+            image={slide.image}
+            onNext={handleNext}
+            clickCount={lastSlideClicks}
+          />
+        );
       default:
         return null;
     }
@@ -451,7 +502,7 @@ export default function StoryDeck() {
   return (
     <div className="fixed inset-0 bg-[#F5F2EB] flex items-center justify-center sm:p-6 overflow-hidden">
 
-      <div className={`relative w-full h-[100svh] sm:h-full sm:max-h-[850px] sm:max-w-[420px] ${isHeyYouSlide ? 'bg-white sm:border-gray-50' : 'bg-[#FFFCF8] sm:border-white'
+      <div className={`relative w-full h-[100svh] sm:h-full sm:max-h-[850px] sm:max-w-[420px] ${isHeyYouSlide ? 'bg-white sm:border-gray-50' : currentSlide?.type === 'creation' ? 'bg-black sm:border-neutral-900' : 'bg-[#FFFCF8] sm:border-white'
         } sm:rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] flex flex-col perspective-1000 sm:border-8 overflow-hidden transition-colors duration-400`}>
 
         {/* Sleek Progress Bar */}
@@ -465,7 +516,9 @@ export default function StoryDeck() {
         </div>
 
         {/* Sunflower Stamp at Top Right Corner */}
-        <SunflowerStamp currentIndex={currentIndex} isHeyYouSlide={isHeyYouSlide} />
+        {currentSlide?.type !== 'creation' && (
+          <SunflowerStamp currentIndex={currentIndex} isHeyYouSlide={isHeyYouSlide} />
+        )}
 
         {/* Cat Emoji Scamper Transition Across Background on Slide Change */}
         <CatTransitionScamper currentIndex={currentIndex} direction={direction} />
@@ -495,19 +548,21 @@ export default function StoryDeck() {
               animate="center"
               exit="exit"
               transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
-              className={`absolute inset-0 flex items-center justify-center pointer-events-none ${currentSlide.type === 'photo' || currentSlide.type === 'situation' ? 'p-2.5 sm:p-6' : 'p-5 sm:p-8'
+              className={`absolute inset-0 flex items-center justify-center pointer-events-none ${currentSlide.type === 'photo' || currentSlide.type === 'situation' ? 'p-2.5 sm:p-6' : currentSlide.type === 'creation' ? 'p-0' : 'p-5 sm:p-8'
                 } ${isHeyYouSlide ? 'bg-white' : ''}`}
               style={{ transformOrigin: direction > 0 ? 'right center' : 'left center' }}
             >
               {/* Cat Emojis as Background Transitions for each slide */}
-              <CatSlideBackground
-                currentIndex={currentIndex}
-                direction={direction}
-                slideType={currentSlide.type}
-                slideId={currentSlide.id}
-              />
+              {currentSlide.type !== 'creation' && (
+                <CatSlideBackground
+                  currentIndex={currentIndex}
+                  direction={direction}
+                  slideType={currentSlide.type}
+                  slideId={currentSlide.id}
+                />
+              )}
 
-              <div className="relative z-10 w-full flex items-center justify-center">
+              <div className={`relative z-10 w-full ${currentSlide.type === 'creation' ? 'h-full flex items-center justify-center' : 'flex items-center justify-center'}`}>
                 {renderSlide(currentSlide)}
               </div>
             </motion.div>
@@ -528,15 +583,20 @@ export default function StoryDeck() {
               disabled={currentIndex === 0}
               className={`pointer-events-auto p-2 rounded-full backdrop-blur-md transition-all cursor-pointer ${currentIndex === 0
                 ? 'opacity-0 pointer-events-none'
-                : 'bg-white/85 hover:bg-white border border-rose-200/70 text-gray-700 shadow-xs hover:shadow-sm'
+                : currentSlide.type === 'creation'
+                  ? 'bg-black/50 hover:bg-black/70 border border-white/25 text-white shadow-xs'
+                  : 'bg-white/85 hover:bg-white border border-rose-200/70 text-gray-700 shadow-xs hover:shadow-sm'
                 }`}
               title="Previous slide"
             >
-              <ChevronLeft className="w-3.5 h-3.5 text-rose-600" />
+              <ChevronLeft className={`w-3.5 h-3.5 ${currentSlide.type === 'creation' ? 'text-white' : 'text-rose-600'}`} />
             </motion.button>
 
             {/* Slide Chapter / Counter Badge */}
-            <div className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md border border-rose-100/80 shadow-2xs text-[10px] font-sans font-medium text-rose-700 tracking-wider">
+            <div className={`px-3 py-1 rounded-full backdrop-blur-md shadow-2xs text-[10px] font-sans font-medium tracking-wider ${currentSlide.type === 'creation'
+              ? 'bg-black/50 border border-white/25 text-white/90'
+              : 'bg-white/90 border border-rose-100/80 text-rose-700'
+              }`}>
               <span>🌻 {currentIndex + 1} / {slides.length} ✨</span>
             </div>
 
@@ -548,14 +608,14 @@ export default function StoryDeck() {
                 e.stopPropagation();
                 handleNext();
               }}
-              disabled={!canAdvance() || currentIndex === slides.length - 1}
+              disabled={!canAdvance()}
               className={`pointer-events-auto inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-sans text-[11px] font-semibold tracking-wide transition-all cursor-pointer shadow-xs group ${!canAdvance()
                 ? 'bg-amber-50 text-amber-700 border border-amber-200/80'
                 : currentIndex === slides.length - 1
-                  ? 'opacity-0 pointer-events-none'
+                  ? 'bg-black/60 hover:bg-black/80 border border-white/25 text-white/95 shadow-md'
                   : 'bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-[0_4px_14px_-2px_rgba(244,63,94,0.35)]'
                 }`}
-              title="Next Slide"
+              title={currentIndex === slides.length - 1 ? 'Click twice to restart story' : 'Next Slide'}
             >
               <span>
                 {!canAdvance()
@@ -564,7 +624,11 @@ export default function StoryDeck() {
                     : currentSlide.type === 'promise'
                       ? 'Keep Promise 🤞'
                       : 'Pick answer 🌻'
-                  : 'Next'}
+                  : currentIndex === slides.length - 1
+                    ? lastSlideClicks === 1
+                      ? 'Tap again 🔄'
+                      : 'Replay 🔄'
+                    : 'Next'}
               </span>
               {canAdvance() && (
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
