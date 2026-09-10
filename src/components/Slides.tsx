@@ -177,26 +177,28 @@ export function MemorySlide({ index }: { index: number }) {
 
         {/* Polaroid Memory Photo Thumbnail if provided */}
         {memory.photo && (
-          <div className="w-48 h-32 sm:w-52 sm:h-36 my-2.5 rounded-xl overflow-hidden shadow-md border-2 border-white relative rotate-1 group">
-            <img
-              src={memory.photo}
-              alt={memory.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
+          <div className="relative my-2 sm:my-2.5 rotate-1 group inline-flex flex-col items-center">
             {/* Washi Tape Strip */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-3.5 bg-amber-100/85 -rotate-2 border-b border-amber-200/50 shadow-2xs" />
+            <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-16 h-4 bg-amber-100/90 -rotate-2 border-b border-amber-200/50 shadow-2xs z-20 backdrop-blur-xs rounded-xs pointer-events-none" />
+            <div className="rounded-xl overflow-hidden shadow-md border-2 border-white relative bg-rose-50/40">
+              <img
+                src={memory.photo}
+                alt={memory.title}
+                className="max-h-[235px] sm:max-h-[265px] w-auto max-w-[270px] sm:max-w-[300px] object-contain block group-hover:scale-105 transition-transform duration-500"
+              />
+            </div>
           </div>
         )}
 
         {/* Story Description */}
-        <p className="font-sans text-gray-700 text-[13.5px] sm:text-[14px] leading-relaxed mb-3.5 px-1 font-normal">
+        <p className="font-sans text-gray-700 text-[13px] sm:text-[13.5px] leading-relaxed mb-3 px-1 font-normal">
           {memory.description}
         </p>
 
         {/* Handwritten Romantic Quote Card */}
-        <div className="w-full bg-rose-50/70 border border-rose-200/60 rounded-xl p-2.5 sm:p-3 relative">
+        <div className="w-full bg-rose-50/70 border border-rose-200/60 rounded-xl p-2 sm:p-2.5 relative">
           <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-300 absolute -top-1.5 left-3.5" />
-          <p className="font-serif italic text-rose-800 text-[14px] sm:text-[15px] leading-snug">
+          <p className="font-serif italic text-rose-800 text-[13.5px] sm:text-[14px] leading-snug">
             "{memory.caption}"
           </p>
         </div>
@@ -230,7 +232,7 @@ export function PhotoSlide({ index }: { index: number }) {
         whileHover={{ scale: 1.03, rotate: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
         onClick={handlePhotoTap}
-        className="bg-white p-3.5 pb-12 rounded-sm shadow-[0_16px_45px_-12px_rgba(0,0,0,0.18)] relative w-full max-w-[285px] sm:max-w-[300px] aspect-[4/5] flex flex-col pointer-events-auto cursor-pointer border border-gray-100 group"
+        className="bg-white p-3.5 pb-12 rounded-sm shadow-[0_16px_45px_-12px_rgba(0,0,0,0.18)] relative w-full max-w-[290px] sm:max-w-[315px] aspect-[4/5.2] flex flex-col pointer-events-auto cursor-pointer border border-gray-100 group"
       >
         {/* Realistic Washi Tape at Top */}
         <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 w-20 h-5 bg-amber-100/90 border-b border-amber-200/50 shadow-2xs rotate-1 z-20 backdrop-blur-xs" />
@@ -256,7 +258,7 @@ export function PhotoSlide({ index }: { index: number }) {
           <img
             src={photo.src}
             alt={photo.caption}
-            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+            className="absolute inset-0 w-full h-full object-cover object-[center_top] group-hover:scale-105 transition-transform duration-700 ease-out"
           />
         </div>
 
@@ -466,13 +468,12 @@ export function RiddleSlide({ index, onUnlock, onNext }: { index: number; onUnlo
             <button
               key={opt}
               onClick={(e) => { e.stopPropagation(); handleGuess(opt); }}
-              className={`pointer-events-auto relative z-30 w-full text-left px-4 py-3.5 rounded-2xl font-sans text-sm tracking-wide transition-all duration-300 border flex items-center justify-between cursor-pointer ${
-                isCorrect
+              className={`pointer-events-auto relative z-30 w-full text-left px-4 py-3.5 rounded-2xl font-sans text-sm tracking-wide transition-all duration-300 border flex items-center justify-between cursor-pointer ${isCorrect
                   ? "bg-[#FFF4F4] border-red-300 text-red-900 shadow-md scale-[1.02] ring-2 ring-red-200"
                   : isWrong
-                  ? "bg-gray-50/70 border-gray-200 text-gray-400 opacity-60"
-                  : "bg-white/90 border-rose-100/80 text-gray-700 backdrop-blur-sm shadow-xs hover:shadow-md hover:border-rose-200 active:scale-[0.98]"
-              }`}
+                    ? "bg-gray-50/70 border-gray-200 text-gray-400 opacity-60"
+                    : "bg-white/90 border-rose-100/80 text-gray-700 backdrop-blur-sm shadow-xs hover:shadow-md hover:border-rose-200 active:scale-[0.98]"
+                }`}
               disabled={status === 'correct' && !isCorrect}
             >
               <span className="font-medium">{opt}</span>
@@ -498,24 +499,6 @@ export function RiddleSlide({ index, onUnlock, onNext }: { index: number; onUnlo
               <p className={`font-serif text-[16px] sm:text-[17px] text-center italic ${status === 'correct' ? 'text-red-700 font-medium' : 'text-gray-500'}`}>
                 {status === 'correct' ? riddle.successMessage : riddle.wrongMessage}
               </p>
-              {status === 'correct' && (
-                <motion.button
-                  initial={{ opacity: 0, scale: 0.85, y: 6 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onNextRef.current();
-                  }}
-                  className="pointer-events-auto mt-2.5 inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 text-white font-sans text-xs font-semibold tracking-wide shadow-md hover:shadow-lg transition-all cursor-pointer group"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-rose-200 animate-pulse" />
-                  <span>Continue</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  <span>🌻</span>
-                </motion.button>
-              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -752,7 +735,7 @@ export function SituationalSlide({ index }: { index: number }) {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={handlePhotoTap}
-          className="w-full h-40 sm:h-48 rounded-xl overflow-hidden shadow-md border-2 border-white relative group cursor-pointer bg-rose-50"
+          className="w-full h-44 sm:h-52 rounded-xl overflow-hidden shadow-md border-2 border-white relative group cursor-pointer bg-rose-50"
         >
           {/* Subtle Washi Tape Accent */}
           <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-16 h-4 bg-amber-100/80 border-b border-amber-200/50 shadow-2xs rotate-1 z-20 backdrop-blur-xs rounded-xs pointer-events-none" />
@@ -777,7 +760,7 @@ export function SituationalSlide({ index }: { index: number }) {
           <img
             src={situation.photo}
             alt={situation.caption || situation.title}
-            className="w-full h-full object-cover object-[center_20%] group-hover:scale-105 transition-transform duration-700 ease-out"
+            className="w-full h-full object-cover object-[center_top] group-hover:scale-105 transition-transform duration-700 ease-out"
           />
 
           {/* Photo Bottom Caption Gradient Strip */}

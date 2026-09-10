@@ -97,7 +97,7 @@ export const config = {
       title: "School Days",
       description: "We were just school friends then. Two innocent kids who had no idea the universe was already weaving our lives together.",
       caption: "Where my favorite story quietly began.",
-      photo: "/assets/couple_selfie.png"
+      photo: "/assets/random_meetup1.png"
     },
     {
       id: 2,
@@ -105,13 +105,13 @@ export const config = {
       title: "The Realization",
       description: "Around this time, something in my heart shifted forever. I found myself searching for your face in crowded hallways. I was the one who fell first.",
       caption: "I was hopelessly, completely gone from day one.",
-      photo: "/assets/selfie.png"
+      photo: "/assets/cat_lover.png"
     },
     {
       id: 3,
       date: "2025",
       title: "Starting Properly",
-      description: "We started talking properly. Not just quick messages, but deep, effortless hours where minutes flew like seconds.",
+      description: "That first outing at my favourite place, where you opened up about all your worries and I simply listened, was when I realised I genuinely wanted this girl to win in life and would do anything to make her see her own worth.",
       caption: "The start of something pure and real.",
       photo: "/assets/couple_perfect.png"
     },
@@ -129,7 +129,7 @@ export const config = {
       title: "Ferry Ride Over Ganga",
       description: "The water shimmering under the evening sky, the river wind on our cheeks. I looked at you and secretly wished that ferry ride would never, ever end.",
       caption: "One of the most cinematic, beautiful memories of my life.",
-      photo: "/assets/soothing_ghat.png"
+      photo: "/assets/ferry_ride_single.png"
     },
     {
       id: 6,
