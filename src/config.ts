@@ -191,13 +191,13 @@ export const config = {
       location: "Cozy Moments"
     },
     {
-      src: "/assets/couple_selfie.png",
+      src: "/assets/AMRA_DUJON.png",
       date: "Classics of Us",
-      caption: "Every ordinary second with you feels like poetry",
+      caption: "Every ordinary second with you feels like poetry, ar chobi tulishni amar sathe ki korbo",
       location: "Us"
     },
     {
-      src: "/assets/people_u_love.png",
+      src: "/assets/group.png",
       date: "Reunion Night",
       caption: "The wholesome night with our favorite people",
       location: "Reunion"
@@ -207,13 +207,6 @@ export const config = {
       date: "Just You",
       caption: "Proof that angels walk among us",
       location: "My Favorite View"
-    }
-  ],
-
-  videos: [
-    {
-      src: "/assets/videos/memory-01.mp4",
-      caption: "Some moments are better remembered exactly as they happened."
     }
   ],
 
@@ -250,7 +243,7 @@ export const config = {
     },
     {
       title: "Your Non-Stop Talking",
-      text: "When you are genuinely happy and comfortable, good luck to anyone trying to stop you! 😂 I could listen to you babble about anything for a thousand hours.",
+      text: "When you are genuinely happy and comfortable😂 I could listen to you babble about anything for a thousand hours.",
       badge: "Favorite Song"
     },
     {
@@ -273,7 +266,7 @@ export const config = {
         label: "Aesthetic Level",
         value: "10/10 • Heart Rate: 185 BPM 📈"
       },
-      insideJoke: "accha re thik ache... keep looking this ethereal, see what happens. ❤️",
+      insideJoke: "accha re thik ache...",
       reactionLabel: "🫠 Melted Completely"
     },
     {
@@ -288,7 +281,7 @@ export const config = {
         label: "Cat Magnet",
         value: "100% • Demoted to Spectator: Yes 🐾"
       },
-      insideJoke: "Meow! (He literally talks about you 24/7 🙄❤️)",
+      insideJoke: "Meow!",
       reactionLabel: "🐾 Cats > Everything"
     },
     {
@@ -303,7 +296,7 @@ export const config = {
         label: "Danger Level",
         value: "Fatal to my heart ⚠️ • Royal Vibe: Peak"
       },
-      insideJoke: "chupp... don't pretend you didn't know you stole the whole show 🤭",
+      insideJoke: "puro gole gechilam bhaii 🤭",
       reactionLabel: "👑 Certified Queen"
     },
     {
@@ -318,22 +311,22 @@ export const config = {
         label: "Squish Factor",
         value: "1000/10 • Peace Restored: 100% ✨"
       },
-      insideJoke: "Those cheeks are under 24/7 squish warranty. No refunds. 🥹",
+      insideJoke: "24/7 squish warranty. 🥹",
       reactionLabel: "🤏 Squish Cheeks Now"
     },
     {
       id: 5,
       badge: "SITUATION #05 • THE QUIET SOUL HOURS 🌙",
       title: "When you go quiet and think nobody notices...",
-      photo: "/assets/soothing_single.png",
-      caption: "A quiet heart with a universe inside",
+      banner: "no pic bc i don't like ur sad & tensed pics to get captured, only happy faces of in my heart will live forever",
+      caption: "Some moments are kept only in the heart 🤍",
       situation: "Looking away into the distance, holding your thoughts inside, choosing silence because you don't want to explain or be a burden to anyone.",
       reality: "You never need to pretend with me. I feel your silence the moment it starts. And I will always, always sit right beside you until the heavy air clears.",
       meter: {
         label: "Safe Space",
         value: "Guaranteed • Solitude: Never Alone 🫂"
       },
-      insideJoke: "You don't have to say a single word. I'm right here. Always.",
+      insideJoke: "I'm right here. Always.",
       reactionLabel: "🤍 Always Safe With Me"
     },
     {
@@ -348,14 +341,14 @@ export const config = {
         label: "Words / Min",
         value: "∞ • Happiness Level: Maximum 🌻"
       },
-      insideJoke: "dherrrr... keep talking, I could listen to you for a lifetime ❤️",
+      insideJoke: "keep talking, i'll listen ❤️",
       reactionLabel: "🎙️ Never Stop Talking"
     },
     {
       id: 7,
       badge: "SITUATION #07 • BIRIYANI & CRAFT CRUSADE 🎨",
       title: "When it's Biriyani time or Art & Craft shopping...",
-      photo: "/assets/cute_pic.png",
+      photo: "/assets/eating_paglu.png",
       caption: "Pure, unfiltered childlike joy",
       situation: "The instant the Biriyani aroma hits the table, or when you find fresh drawing pens and craft supplies—pure, unadulterated childlike excitement.",
       reality: "The way your eyes light up over the things you love is the most contagious, heartwarming sight. I'd give you all the craft supplies and Biriyani in Kolkata just to see you smile like this.",
@@ -363,7 +356,7 @@ export const config = {
         label: "Joy Level",
         value: "Peak 🍚🎨 • Protect Her At All Costs"
       },
-      insideJoke: "Biriyani is life, but don't forget who brings it to you! 🤭❤️",
+      insideJoke: "Koi amake khawalina ajobdi",
       reactionLabel: "✨ Pure Childlike Joy"
     }
   ],

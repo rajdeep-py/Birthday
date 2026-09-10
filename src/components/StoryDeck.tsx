@@ -1,13 +1,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { config } from '../config';
-import { TextSlide, RiddleSlide, MemorySlide, PhotoSlide, VideoSlide, NoteSlide, HugSlide, SituationalSlide } from './Slides';
+import { TextSlide, RiddleSlide, MemorySlide, PhotoSlide, NoteSlide, HugSlide, SituationalSlide } from './Slides';
 import { CatSlideBackground, CatTransitionScamper } from './CatBackground';
 import { ChevronLeft, ArrowRight } from 'lucide-react';
 
 type SlideDef = {
   id: string;
-  type: 'text' | 'riddle' | 'memory' | 'photo' | 'video' | 'note' | 'hug' | 'situation';
+  type: 'text' | 'riddle' | 'memory' | 'photo' | 'note' | 'hug' | 'situation';
   content?: string;
   align?: 'center' | 'left';
   heading?: boolean;
@@ -173,7 +173,7 @@ export default function StoryDeck() {
       id: 'situations-end',
       type: 'text',
       content: "Whether you're quiet, giggling, petting cats, or stealing my heart in a saree...",
-      subtext: "I fall for every single version of you. Every single day. ❤️"
+      subtext: "I felt for every single version of you. Every single day. ❤️"
     });
 
     deck.push({
@@ -208,7 +208,7 @@ export default function StoryDeck() {
     deck.push({
       id: 'side-4',
       type: 'text',
-      content: "I know the world doesn't always get to see this version of you.\n\nAnd every single day, I thank the universe that I do.",
+      content: "I know the world doesn't always get to see this version of you.\n\nAnd every single day, I thank the universe that I did.",
       subtext: "accha re thik ache ❤️"
     });
 
@@ -221,21 +221,16 @@ export default function StoryDeck() {
     deck.push({
       id: 'trust-2',
       type: 'text',
-      content: "And somehow, in a world full of noise, I am the person you trust with your deepest truths.",
+      content: "And somehow, in a world full of noise, you are the person I had trust with my deepest truths.",
       subtext: "That means everything to me."
     });
     deck.push({
       id: 'trust-3',
       type: 'text',
-      content: "That trust is the most sacred gift anyone has ever given me.\n\nI promise I will never, ever take it for granted.",
+      content: "That trust is the most sacred gift anyone has ever given me.",
       subtext: "I swear on my heart."
     });
-    deck.push({
-      id: 'trust-4',
-      type: 'text',
-      content: "Because being trusted by you means more to me than you could ever possibly realize.",
-      subtext: "You are my safe haven."
-    });
+
 
     deck.push({
       id: 'silence-1',
@@ -446,8 +441,6 @@ export default function StoryDeck() {
         return <MemorySlide index={slide.index!} />;
       case 'photo':
         return <PhotoSlide index={slide.index!} />;
-      case 'video':
-        return <VideoSlide index={slide.index!} />;
       case 'note':
         return <NoteSlide index={slide.index!} />;
       case 'situation':
@@ -508,8 +501,8 @@ export default function StoryDeck() {
               animate="center"
               exit="exit"
               transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
-              className={`absolute inset-0 flex items-center justify-center p-6 sm:p-8 pointer-events-none ${isHeyYouSlide ? 'bg-white' : ''
-                }`}
+              className={`absolute inset-0 flex items-center justify-center pointer-events-none ${currentSlide.type === 'photo' || currentSlide.type === 'situation' ? 'p-2.5 sm:p-6' : 'p-5 sm:p-8'
+                } ${isHeyYouSlide ? 'bg-white' : ''}`}
               style={{ transformOrigin: direction > 0 ? 'right center' : 'left center' }}
             >
               {/* Cat Emojis as Background Transitions for each slide */}
@@ -539,11 +532,10 @@ export default function StoryDeck() {
                 handlePrev();
               }}
               disabled={currentIndex === 0}
-              className={`pointer-events-auto p-2 rounded-full backdrop-blur-md transition-all cursor-pointer ${
-                currentIndex === 0
-                  ? 'opacity-0 pointer-events-none'
-                  : 'bg-white/85 hover:bg-white border border-rose-200/70 text-gray-700 shadow-xs hover:shadow-sm'
-              }`}
+              className={`pointer-events-auto p-2 rounded-full backdrop-blur-md transition-all cursor-pointer ${currentIndex === 0
+                ? 'opacity-0 pointer-events-none'
+                : 'bg-white/85 hover:bg-white border border-rose-200/70 text-gray-700 shadow-xs hover:shadow-sm'
+                }`}
               title="Previous slide"
             >
               <ChevronLeft className="w-3.5 h-3.5 text-rose-600" />
@@ -563,13 +555,12 @@ export default function StoryDeck() {
                 handleNext();
               }}
               disabled={!canAdvance() || currentIndex === slides.length - 1}
-              className={`pointer-events-auto inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-sans text-[11px] font-semibold tracking-wide transition-all cursor-pointer shadow-xs group ${
-                !canAdvance()
-                  ? 'bg-amber-50 text-amber-700 border border-amber-200/80'
-                  : currentIndex === slides.length - 1
+              className={`pointer-events-auto inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-sans text-[11px] font-semibold tracking-wide transition-all cursor-pointer shadow-xs group ${!canAdvance()
+                ? 'bg-amber-50 text-amber-700 border border-amber-200/80'
+                : currentIndex === slides.length - 1
                   ? 'opacity-0 pointer-events-none'
                   : 'bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-[0_4px_14px_-2px_rgba(244,63,94,0.35)]'
-              }`}
+                }`}
               title="Next Slide"
             >
               <span>

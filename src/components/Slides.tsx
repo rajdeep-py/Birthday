@@ -210,6 +210,7 @@ export function MemorySlide({ index }: { index: number }) {
 export function PhotoSlide({ index }: { index: number }) {
   const photo = config.photos[index];
   const [hearts, setHearts] = useState<{ id: number; x: number; y: number }[]>([]);
+  const [isPortrait, setIsPortrait] = useState(false);
 
   const handlePhotoTap = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -224,18 +225,20 @@ export function PhotoSlide({ index }: { index: number }) {
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center py-2 px-2 select-none">
+    <div className="w-full h-full flex flex-col items-center justify-center py-1 px-1 select-none">
       {/* Romantic Film Polaroid Card */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9, rotate: index % 2 === 0 ? 2 : -2 }}
         animate={{ opacity: 1, scale: 1, rotate: index % 2 === 0 ? 1.5 : -1.5 }}
-        whileHover={{ scale: 1.03, rotate: 0 }}
+        whileHover={{ scale: 1.02, rotate: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
         onClick={handlePhotoTap}
-        className="bg-white p-3.5 pb-12 rounded-sm shadow-[0_16px_45px_-12px_rgba(0,0,0,0.18)] relative w-full max-w-[290px] sm:max-w-[315px] aspect-[4/5.2] flex flex-col pointer-events-auto cursor-pointer border border-gray-100 group"
+        className={`bg-white p-3 sm:p-3.5 pb-12 sm:pb-14 rounded-md shadow-[0_20px_50px_-12px_rgba(0,0,0,0.22)] relative w-full ${
+          isPortrait ? 'max-w-[315px] sm:max-w-[340px]' : 'max-w-[350px] sm:max-w-[380px]'
+        } flex flex-col pointer-events-auto cursor-pointer border border-gray-100 group transition-all duration-300`}
       >
         {/* Realistic Washi Tape at Top */}
-        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 w-20 h-5 bg-amber-100/90 border-b border-amber-200/50 shadow-2xs rotate-1 z-20 backdrop-blur-xs" />
+        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 w-24 h-5 bg-amber-100/90 border-b border-amber-200/50 shadow-2xs rotate-1 z-20 backdrop-blur-xs rounded-xs" />
 
         {/* Floating Hearts on Tap */}
         <AnimatePresence>
@@ -253,28 +256,46 @@ export function PhotoSlide({ index }: { index: number }) {
           ))}
         </AnimatePresence>
 
-        {/* The Photo Image */}
-        <div className="w-full flex-1 bg-gray-50 relative overflow-hidden rounded-xs">
+        {/* The Photo Image Container */}
+        <div className={`w-full relative overflow-hidden rounded-xs bg-gray-50/60 flex items-center justify-center ${
+          isPortrait ? 'h-[360px] sm:h-[400px]' : 'h-[260px] sm:h-[295px]'
+        }`}>
+          {/* Ambient blurred backdrop so any subtle aspect difference has a dreamy romantic glow */}
+          <img
+            src={photo.src}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover blur-lg opacity-25 scale-110 pointer-events-none"
+          />
+          {/* Main image: object-contain ensures 100% of the width and height fits without ANY cropping */}
           <img
             src={photo.src}
             alt={photo.caption}
-            className="absolute inset-0 w-full h-full object-cover object-[center_top] group-hover:scale-105 transition-transform duration-700 ease-out"
+            onLoad={(e) => {
+              const img = e.currentTarget;
+              if (img.naturalHeight > img.naturalWidth * 1.15) {
+                setIsPortrait(true);
+              } else {
+                setIsPortrait(false);
+              }
+            }}
+            className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 ease-out"
           />
         </div>
 
         {/* Handwritten Caption at Bottom */}
-        <p className="absolute bottom-4 left-0 w-full text-center font-serif italic text-gray-800 text-[14px] sm:text-[15px] px-2 leading-tight">
+        <p className="absolute bottom-3 sm:bottom-3.5 left-0 w-full text-center font-serif italic text-gray-800 text-[14.5px] sm:text-[16px] px-3 leading-tight">
           {photo.caption}
         </p>
 
         {/* Cute Tap Icon */}
-        <span className="absolute bottom-1 right-2 text-[10px] text-rose-400 opacity-60 group-hover:opacity-100 transition-opacity">
+        <span className="absolute bottom-1 right-2.5 text-[10px] text-rose-400 opacity-60 group-hover:opacity-100 transition-opacity">
           Tap me ❤️
         </span>
       </motion.div>
 
       {/* Location & Date Badge */}
-      <div className="inline-flex items-center gap-2 mt-4 px-3.5 py-1 rounded-full bg-white/80 border border-gray-200/60 shadow-2xs text-[10px] font-sans tracking-widest uppercase text-gray-600 font-medium">
+      <div className="inline-flex items-center gap-2 mt-3 px-3.5 py-1 rounded-full bg-white/85 border border-gray-200/60 shadow-2xs text-[10.5px] font-sans tracking-widest uppercase text-gray-600 font-medium backdrop-blur-xs">
         <MapPin className="w-3 h-3 text-rose-400" />
         <span>{photo.location}</span>
         <span>•</span>
@@ -284,26 +305,6 @@ export function PhotoSlide({ index }: { index: number }) {
   );
 }
 
-export function VideoSlide({ index }: { index: number }) {
-  const video = config.videos[index];
-  return (
-    <div className="w-full text-center px-2">
-      <div className="pointer-events-auto relative z-30 bg-white p-2.5 rounded-2xl shadow-[0_15px_35px_-10px_rgba(0,0,0,0.12)] border border-rose-100/60 w-full max-w-[285px] mx-auto aspect-[9/16] overflow-hidden mb-6">
-        <video
-          src={video.src}
-          controls
-          className="w-full h-full object-cover rounded-xl relative z-10"
-        />
-        <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm italic opacity-50 z-0">
-          [Video Placeholder]
-        </div>
-      </div>
-      <p className="font-serif italic text-gray-700 text-base sm:text-lg px-4">
-        "{video.caption}"
-      </p>
-    </div>
-  );
-}
 
 export function NoteSlide({ index }: { index: number }) {
   const note = config.loveNotes[index];
@@ -712,33 +713,33 @@ export function SituationalSlide({ index }: { index: number }) {
   };
 
   return (
-    <div className="w-full flex flex-col items-center justify-center px-2 py-1 select-none">
+    <div className="w-full flex flex-col items-center justify-center px-1 py-1 select-none">
       <motion.div
         initial={{ opacity: 0, scale: 0.94, y: 16 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full max-w-[340px] sm:max-w-[365px] bg-white/92 backdrop-blur-md rounded-2xl p-3.5 sm:p-4 border border-rose-100/90 shadow-[0_16px_42px_-12px_rgba(225,29,72,0.16)] flex flex-col items-center pointer-events-auto relative text-center"
+        className="w-full max-w-[355px] sm:max-w-[385px] bg-white/94 backdrop-blur-md rounded-2xl p-3 sm:p-3.5 border border-rose-100/90 shadow-[0_18px_45px_-12px_rgba(225,29,72,0.18)] flex flex-col items-center pointer-events-auto relative text-center"
       >
         {/* Top Situation Pill Badge */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-rose-50 border border-rose-200/80 text-[9px] sm:text-[10px] font-sans tracking-[0.18em] uppercase font-bold text-rose-700 mb-1.5 shadow-2xs">
+        <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-rose-50 border border-rose-200/80 text-[9px] sm:text-[9.5px] font-sans tracking-[0.18em] uppercase font-bold text-rose-700 mb-1 shadow-2xs">
           <Sparkles className="w-2.5 h-2.5 text-rose-500" />
           <span>{situation.badge}</span>
         </div>
 
         {/* Catchy Relatable Title */}
-        <h3 className="font-serif text-[17px] sm:text-[18.5px] font-semibold text-gray-900 leading-tight mb-2 px-1">
+        <h3 className="font-serif text-[16.5px] sm:text-[18px] font-semibold text-gray-900 leading-tight mb-1.5 px-1">
           "{situation.title}"
         </h3>
 
-        {/* Interactive Photo Frame */}
+        {/* Interactive Photo Frame - Enlarged width and length */}
         <motion.div
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.99 }}
           onClick={handlePhotoTap}
-          className="w-full h-44 sm:h-52 rounded-xl overflow-hidden shadow-md border-2 border-white relative group cursor-pointer bg-rose-50"
+          className="w-full h-56 sm:h-64 rounded-xl overflow-hidden shadow-md border-2 border-white relative group cursor-pointer bg-rose-50/50 flex items-center justify-center"
         >
           {/* Subtle Washi Tape Accent */}
-          <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-16 h-4 bg-amber-100/80 border-b border-amber-200/50 shadow-2xs rotate-1 z-20 backdrop-blur-xs rounded-xs pointer-events-none" />
+          <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-18 h-4 bg-amber-100/85 border-b border-amber-200/50 shadow-2xs rotate-1 z-20 backdrop-blur-xs rounded-xs pointer-events-none" />
 
           {/* Floating Emojis / Hearts on Photo Tap */}
           <AnimatePresence>
@@ -756,22 +757,49 @@ export function SituationalSlide({ index }: { index: number }) {
             ))}
           </AnimatePresence>
 
-          {/* Individual Photo */}
-          <img
-            src={situation.photo}
-            alt={situation.caption || situation.title}
-            className="w-full h-full object-cover object-[center_top] group-hover:scale-105 transition-transform duration-700 ease-out"
-          />
+          {situation.banner || !situation.photo ? (
+            /* Banner Card instead of Photo */
+            <div className="relative z-10 w-full h-full p-6 flex flex-col items-center justify-center text-center bg-gradient-to-br from-rose-50/95 via-[#FFF6F6] to-pink-50/90 space-y-3 select-none">
+              <div className="w-12 h-12 rounded-full bg-white shadow-sm border border-rose-100 flex items-center justify-center text-2xl filter drop-shadow-2xs">
+                🤍
+              </div>
+              <p className="font-serif italic text-gray-800 text-[15px] sm:text-[16.5px] leading-relaxed max-w-[290px] px-2 font-medium">
+                "{situation.banner || "no pic bc i don't like ur pics to get captured, only happy faces of ur in my heart"}"
+              </p>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50/90 border border-rose-200/70 shadow-2xs">
+                <span className="text-[10px] sm:text-[10.5px] font-sans tracking-wider text-rose-700 font-semibold">
+                  Kept in my heart forever ✨
+                </span>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Ambient Blurred Backdrop */}
+              <img
+                src={situation.photo}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover blur-lg opacity-30 scale-110 pointer-events-none"
+              />
 
-          {/* Photo Bottom Caption Gradient Strip */}
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent p-2 pt-4 flex items-end justify-between pointer-events-none">
-            <span className="text-[10.5px] font-serif italic text-white/95 truncate drop-shadow-xs max-w-[70%]">
-              {situation.caption}
-            </span>
-            <span className="text-[9px] font-sans text-rose-200 font-medium px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-xs border border-white/20">
-              Tap her ❤️
-            </span>
-          </div>
+              {/* Individual Photo - Fits completely without cropping */}
+              <img
+                src={situation.photo}
+                alt={situation.caption || situation.title}
+                className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 ease-out"
+              />
+
+              {/* Photo Bottom Caption Gradient Strip */}
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-2 pt-5 flex items-end justify-between pointer-events-none z-20">
+                <span className="text-[10.5px] font-serif italic text-white/95 truncate drop-shadow-xs max-w-[70%]">
+                  {situation.caption}
+                </span>
+                <span className="text-[9px] font-sans text-rose-200 font-medium px-2 py-0.5 rounded-full bg-black/50 backdrop-blur-xs border border-white/20">
+                  Tap her ❤️
+                </span>
+              </div>
+            </>
+          )}
         </motion.div>
 
         {/* The Scene & The Truth Card */}
