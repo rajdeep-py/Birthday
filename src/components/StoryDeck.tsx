@@ -447,8 +447,13 @@ export default function StoryDeck() {
     setLastSlideClicks(0);
   }, [currentIndex]);
 
+  const lastAdvanceTimeRef = useRef(0);
+
   const handleNext = () => {
+    const now = Date.now();
+    if (now - lastAdvanceTimeRef.current < 450) return;
     if (!canAdvance()) return;
+    lastAdvanceTimeRef.current = now;
     if (currentIndex < slides.length - 1) {
       setDirection(1);
       setCurrentIndex(prev => prev + 1);
@@ -458,7 +463,10 @@ export default function StoryDeck() {
   };
 
   const handlePrev = () => {
+    const now = Date.now();
+    if (now - lastAdvanceTimeRef.current < 450) return;
     if (currentIndex > 0) {
+      lastAdvanceTimeRef.current = now;
       setDirection(-1);
       setCurrentIndex(prev => prev - 1);
     }
@@ -469,6 +477,9 @@ export default function StoryDeck() {
   };
 
   const handleForceNext = () => {
+    const now = Date.now();
+    if (now - lastAdvanceTimeRef.current < 450) return;
+    lastAdvanceTimeRef.current = now;
     setUnlocked(prev => ({ ...prev, [currentIndex]: true }));
     if (currentIndex < slides.length - 1) {
       setDirection(1);

@@ -392,6 +392,9 @@ export function RiddleSlide({ index, onUnlock, onNext }: { index: number; onUnlo
   const [status, setStatus] = useState<'correct' | 'wrong' | null>(null);
   const [catSparks, setCatSparks] = useState(false);
 
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const hasAdvancedRef = useRef(false);
+
   const onNextRef = useRef(onNext);
   const onUnlockRef = useRef(onUnlock);
   useEffect(() => {
@@ -399,9 +402,29 @@ export function RiddleSlide({ index, onUnlock, onNext }: { index: number; onUnlo
     onUnlockRef.current = onUnlock;
   });
 
+  // Always cleanup pending timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, []);
+
+  const safeAdvance = () => {
+    if (hasAdvancedRef.current) return;
+    hasAdvancedRef.current = true;
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    onNextRef.current();
+  };
+
   const handleGuess = (opt: string) => {
     if (status === 'correct') {
-      onNextRef.current();
+      safeAdvance();
       return;
     }
     setSelected(opt);
@@ -409,8 +432,8 @@ export function RiddleSlide({ index, onUnlock, onNext }: { index: number; onUnlo
       setStatus('correct');
       setCatSparks(true);
       onUnlockRef.current();
-      setTimeout(() => {
-        onNextRef.current();
+      timerRef.current = setTimeout(() => {
+        safeAdvance();
       }, 1200);
     } else {
       setStatus('wrong');
@@ -419,10 +442,11 @@ export function RiddleSlide({ index, onUnlock, onNext }: { index: number; onUnlo
 
   return (
     <div
-      className="w-full flex flex-col items-center px-3 relative select-none"
-      onClick={() => {
+      className="w-full flex flex-col items-center px-3 relative select-none pointer-events-auto"
+      onClick={(e) => {
         if (status === 'correct') {
-          onNextRef.current();
+          e.stopPropagation();
+          safeAdvance();
         }
       }}
     >
