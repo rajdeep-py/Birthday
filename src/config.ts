@@ -135,9 +135,9 @@ export const config = {
       id: 6,
       date: "That Late Night",
       title: "Friends' Reunion",
-      description: "A room filled with laughter and friends, but in every room full of people, my eyes will always find you first.",
+      description: "A room filled with laughter and friends, but in every room full of people, my eyes would always find you first.",
       caption: "One of the warmest, most wholesome nights with you.",
-      photo: "/assets/people_u_love.png"
+      photo: "/assets/friends_reunion.png"
     },
     {
       id: 7,
@@ -145,7 +145,7 @@ export const config = {
       title: "Random Hangouts",
       description: "No plans, no fancy spots. Just walking beside you, sharing small silly moments, realizing that any ordinary day with you is paradise.",
       caption: "Because simply existing near you makes everything right.",
-      photo: "/assets/cute_pic.png"
+      photo: "/assets/couple_selfie_2nd.png"
     },
     {
       id: 8,
@@ -153,7 +153,7 @@ export const config = {
       title: "Late-Night Conversations",
       description: "When the entire world has fallen asleep, and it's just your sleepy voice in my ears, talking about anything and everything.",
       caption: "My sacred, favorite part of every 24 hours.",
-      photo: "/assets/soothing_single.png"
+      photo: "/assets/wp_ss.jpeg"
     },
     {
       id: 9,
@@ -161,7 +161,7 @@ export const config = {
       title: "Silly Moments",
       description: "The adorable pouts, your suppressed giggles, the childish tantrums that make me fall in love with you all over again.",
       caption: "Never stop being that childish girl with me. I adore you.",
-      photo: "/assets/cat_lover.png"
+      photo: "/assets/pout_selfie.jpeg"
     }
   ],
 
@@ -173,7 +173,7 @@ export const config = {
       location: "With You"
     },
     {
-      src: "/assets/soothing_ghat.png",
+      src: "/assets/couple_selfie.png",
       date: "That Special Evening",
       caption: "Bagbazar Ghat • That sunset over the Ganga",
       location: "Bagbazar Ghat"
