@@ -1,9 +1,9 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { config } from '../config';
 import { TextSlide, RiddleSlide, MemorySlide, PhotoSlide, NoteSlide, HugSlide, SituationalSlide, PromiseSlide, CreationSlide } from './Slides';
 import { CatSlideBackground, CatTransitionScamper } from './CatBackground';
-import { ChevronLeft, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ArrowRight, Music, VolumeX } from 'lucide-react';
 
 type SlideDef = {
   id: string;
@@ -356,6 +356,63 @@ export default function StoryDeck() {
 
   const currentSlide = slides[currentIndex];
 
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.loop = true;
+    audio.volume = 0.65;
+
+    // Try starting autoplay immediately
+    const startAudio = () => {
+      audio.play()
+        .then(() => setIsPlaying(true))
+        .catch(() => {
+          // Autoplay blocked by browser policy without user gesture
+          setIsPlaying(false);
+        });
+    };
+
+    startAudio();
+
+    // Fallback: start immediately on the first user interaction anywhere on the screen
+    const handleFirstGesture = () => {
+      if (audio.paused) {
+        audio.play()
+          .then(() => setIsPlaying(true))
+          .catch(() => {});
+      }
+    };
+
+    window.addEventListener('click', handleFirstGesture, { once: true });
+    window.addEventListener('touchstart', handleFirstGesture, { once: true });
+    window.addEventListener('keydown', handleFirstGesture, { once: true });
+
+    return () => {
+      window.removeEventListener('click', handleFirstGesture);
+      window.removeEventListener('touchstart', handleFirstGesture);
+      window.removeEventListener('keydown', handleFirstGesture);
+    };
+  }, []);
+
+  const toggleMusic = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isPlaying) {
+      audio.pause();
+      setIsPlaying(false);
+    } else {
+      audio.play()
+        .then(() => setIsPlaying(true))
+        .catch(() => {});
+    }
+  };
+
   const canAdvance = () => {
     if (currentSlide.type === 'riddle' && !unlocked[currentIndex]) return false;
     if (currentSlide.type === 'hug' && !unlocked[currentIndex]) return false;
@@ -514,6 +571,51 @@ export default function StoryDeck() {
             transition={{ duration: 0.4, ease: "easeOut" }}
           />
         </div>
+
+        {/* Ambient Background Music Controls (Top Left) */}
+        <div className="absolute top-3.5 left-3.5 sm:top-5 sm:left-5 z-30 pointer-events-auto select-none">
+          <motion.button
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.92 }}
+            onClick={toggleMusic}
+            className={`p-2 rounded-full backdrop-blur-md shadow-xs transition-all cursor-pointer flex items-center justify-center ${
+              currentSlide?.type === 'creation'
+                ? 'bg-black/50 hover:bg-black/70 border border-white/25 text-white'
+                : 'bg-white/85 hover:bg-white border border-rose-200/70 text-rose-700 shadow-xs'
+            }`}
+            title={isPlaying ? "Pause music" : "Play music"}
+            aria-label="Toggle background music"
+          >
+            {isPlaying ? (
+              <div className="flex items-center gap-1 px-0.5">
+                <Music className={`w-3.5 h-3.5 animate-pulse ${currentSlide?.type === 'creation' ? 'text-rose-300' : 'text-rose-500'}`} />
+                <div className="flex items-end gap-0.5 h-2.5">
+                  <span className="w-0.5 h-1.5 bg-rose-500 rounded-full animate-pulse" />
+                  <span className="w-0.5 h-2.5 bg-rose-500 rounded-full animate-pulse delay-100" />
+                  <span className="w-0.5 h-2 bg-rose-500 rounded-full animate-pulse delay-200" />
+                </div>
+              </div>
+            ) : (
+              <VolumeX className="w-3.5 h-3.5 opacity-60" />
+            )}
+          </motion.button>
+        </div>
+
+        {/* Global Continuous Background Audio */}
+        <audio
+          ref={audioRef}
+          src="/assets/song.mp3"
+          loop
+          preload="auto"
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          onEnded={() => {
+            if (audioRef.current) {
+              audioRef.current.currentTime = 0;
+              audioRef.current.play().catch(() => {});
+            }
+          }}
+        />
 
         {/* Sunflower Stamp at Top Right Corner */}
         {currentSlide?.type !== 'creation' && (
