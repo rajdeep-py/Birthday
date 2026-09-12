@@ -182,7 +182,7 @@ export default function StoryDeck() {
       type: 'text',
       content: "Things I Love About You",
       heading: true,
-      subtext: "Just 8 of the million reasons why it's always been you"
+      subtext: "Just 9 of the million reasons why it's always been you"
     });
     config.loveNotes.forEach((_, i) => {
       deck.push({ id: `note-${i}`, type: 'note', index: i });
@@ -383,7 +383,7 @@ export default function StoryDeck() {
       if (audio.paused) {
         audio.play()
           .then(() => setIsPlaying(true))
-          .catch(() => {});
+          .catch(() => { });
       }
     };
 
@@ -409,7 +409,7 @@ export default function StoryDeck() {
     } else {
       audio.play()
         .then(() => setIsPlaying(true))
-        .catch(() => {});
+        .catch(() => { });
     }
   };
 
@@ -589,11 +589,10 @@ export default function StoryDeck() {
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
             onClick={toggleMusic}
-            className={`p-2 rounded-full backdrop-blur-md shadow-xs transition-all cursor-pointer flex items-center justify-center ${
-              currentSlide?.type === 'creation'
+            className={`p-2 rounded-full backdrop-blur-md shadow-xs transition-all cursor-pointer flex items-center justify-center ${currentSlide?.type === 'creation'
                 ? 'bg-black/50 hover:bg-black/70 border border-white/25 text-white'
                 : 'bg-white/85 hover:bg-white border border-rose-200/70 text-rose-700 shadow-xs'
-            }`}
+              }`}
             title={isPlaying ? "Pause music" : "Play music"}
             aria-label="Toggle background music"
           >
@@ -623,7 +622,7 @@ export default function StoryDeck() {
           onEnded={() => {
             if (audioRef.current) {
               audioRef.current.currentTime = 0;
-              audioRef.current.play().catch(() => {});
+              audioRef.current.play().catch(() => { });
             }
           }}
         />

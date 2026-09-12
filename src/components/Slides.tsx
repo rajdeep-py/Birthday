@@ -61,7 +61,7 @@ export function HeyYouSlide() {
         className="mt-3.5 inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-50/70 border border-amber-200/50 text-[10px] font-sans uppercase tracking-[0.18em] text-amber-800 font-medium"
       >
         <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
-        <span>Auto-playing story • Tap to skip</span>
+        <span>Tap to skip</span>
         <span className="text-xs">➔</span>
       </motion.div>
     </div>
@@ -236,9 +236,8 @@ export function PhotoSlide({ index }: { index: number }) {
         whileHover={{ scale: 1.02, rotate: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
         onClick={handlePhotoTap}
-        className={`bg-white p-3 sm:p-3.5 pb-12 sm:pb-14 rounded-md shadow-[0_20px_50px_-12px_rgba(0,0,0,0.22)] relative w-full ${
-          isPortrait ? 'max-w-[315px] sm:max-w-[340px]' : 'max-w-[350px] sm:max-w-[380px]'
-        } flex flex-col pointer-events-auto cursor-pointer border border-gray-100 group transition-all duration-300`}
+        className={`bg-white p-3 sm:p-3.5 pb-12 sm:pb-14 rounded-md shadow-[0_20px_50px_-12px_rgba(0,0,0,0.22)] relative w-full ${isPortrait ? 'max-w-[315px] sm:max-w-[340px]' : 'max-w-[350px] sm:max-w-[380px]'
+          } flex flex-col pointer-events-auto cursor-pointer border border-gray-100 group transition-all duration-300`}
       >
         {/* Realistic Washi Tape at Top */}
         <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 w-24 h-5 bg-amber-100/90 border-b border-amber-200/50 shadow-2xs rotate-1 z-20 backdrop-blur-xs rounded-xs" />
@@ -260,9 +259,8 @@ export function PhotoSlide({ index }: { index: number }) {
         </AnimatePresence>
 
         {/* The Photo Image Container */}
-        <div className={`w-full relative overflow-hidden rounded-xs bg-gray-50/60 flex items-center justify-center ${
-          isPortrait ? 'h-[360px] sm:h-[400px]' : 'h-[260px] sm:h-[295px]'
-        }`}>
+        <div className={`w-full relative overflow-hidden rounded-xs bg-gray-50/60 flex items-center justify-center ${isPortrait ? 'h-[360px] sm:h-[400px]' : 'h-[260px] sm:h-[295px]'
+          }`}>
           {/* Ambient blurred backdrop so any subtle aspect difference has a dreamy romantic glow */}
           <img
             src={photo.src}
@@ -497,10 +495,10 @@ export function RiddleSlide({ index, onUnlock, onNext }: { index: number; onUnlo
               key={opt}
               onClick={(e) => { e.stopPropagation(); handleGuess(opt); }}
               className={`pointer-events-auto relative z-30 w-full text-left px-4 py-3.5 rounded-2xl font-sans text-sm tracking-wide transition-all duration-300 border flex items-center justify-between cursor-pointer ${isCorrect
-                  ? "bg-[#FFF4F4] border-red-300 text-red-900 shadow-md scale-[1.02] ring-2 ring-red-200"
-                  : isWrong
-                    ? "bg-gray-50/70 border-gray-200 text-gray-400 opacity-60"
-                    : "bg-white/90 border-rose-100/80 text-gray-700 backdrop-blur-sm shadow-xs hover:shadow-md hover:border-rose-200 active:scale-[0.98]"
+                ? "bg-[#FFF4F4] border-red-300 text-red-900 shadow-md scale-[1.02] ring-2 ring-red-200"
+                : isWrong
+                  ? "bg-gray-50/70 border-gray-200 text-gray-400 opacity-60"
+                  : "bg-white/90 border-rose-100/80 text-gray-700 backdrop-blur-sm shadow-xs hover:shadow-md hover:border-rose-200 active:scale-[0.98]"
                 }`}
               disabled={status === 'correct' && !isCorrect}
             >

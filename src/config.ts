@@ -48,8 +48,8 @@ export const config = {
     },
     {
       question: "What happens when this shy, introverted girl becomes entirely comfortable with someone?",
-      options: ["She falls asleep", "She won't stop talking 😂", "She ignores them", "She starts drawing"],
-      answer: "She won't stop talking 😂",
+      options: ["You fall asleep", "You won't stop talking 😂", "You ignores them", "You starts drawing"],
+      answer: "You won't stop talking 😂",
       successMessage: "And I wouldn't have it any other way. ❤️",
       wrongMessage: "Chupp! You know the real answer. ❤️"
     },
@@ -75,11 +75,11 @@ export const config = {
       wrongMessage: "Try again, sunflower. 🌻"
     },
     {
-      question: "What happens when you're genuinely happy?",
-      options: ["You smile silently", "You start talking nonstop", "You go to sleep", "You paint"],
-      answer: "You start talking nonstop",
-      successMessage: "I love it when you do that. ❤️",
-      wrongMessage: "Chupp! ❤️"
+      question: "What scares you more in a relationship?",
+      options: ["Losing someone you love", "Being misunderstood", "Losing my independence", "Loving someone who doesn't love me equally"],
+      answer: "Losing someone you love",
+      successMessage: "I was always there to love you.",
+      wrongMessage: "HeHe! ❤️"
     },
     {
       question: "What's one thing you love receiving because it feels more personal than expensive?",
@@ -250,6 +250,11 @@ export const config = {
       title: "Your Silence",
       text: "Because even when you go quiet, when you don't say a single word and hide your sadness... I still notice. And I will always be right there to hold you.",
       badge: "Safe Space"
+    },
+    {
+      title: "You 🫵🏻",
+      text: "Yes , you",
+      badge: "My Safe Space"
     }
   ],
 
@@ -318,8 +323,8 @@ export const config = {
       id: 5,
       badge: "SITUATION #05 • THE QUIET SOUL HOURS 🌙",
       title: "When you go quiet and think nobody notices...",
-      banner: "no pic bc i don't like ur sad & tensed pics to get captured, only happy faces of in my heart will live forever",
-      caption: "Some moments are kept only in the heart 🤍",
+      banner: "no pic bc i don't like ur sad & tensed pics to get captured, only happy faces of u",
+      caption: "will be kept forever in my heart 🤍",
       situation: "Looking away into the distance, holding your thoughts inside, choosing silence because you don't want to explain or be a burden to anyone.",
       reality: "You never need to pretend with me. I feel your silence the moment it starts. And I will always, always sit right beside you until the heavy air clears.",
       meter: {
@@ -333,7 +338,7 @@ export const config = {
       id: 6,
       badge: "SITUATION #06 • TALKING NON-STOP MODE 🗣️",
       title: "When you get comfortable and start babbling...",
-      photo: "/assets/selfie.png",
+      photo: "/assets/funny_single.jpeg",
       caption: "When the shy girl turns into a podcast",
       situation: "Once that introverted wall comes down, words start flying at 300 words per minute. Non-stop stories, cute little rants, and contagious giggles!",
       reality: "Everyone else thinks you're quiet and reserved. Only I know the energetic, animated chatterbox that blooms when you're happy. It's my favorite song in the world.",
