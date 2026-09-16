@@ -89,7 +89,7 @@ export const config = {
     title: "A Voice Note From yours truly, hehe",
     date: "Recorded for your birthday 🎙️",
     duration: "3:33",
-    audioSrc: "/assets/bday_wish.mp3",
+    audioSrc: "/assets/bday_wish.ogg",
     caption: "Just my voice wishing my favorite person the happiest birthday."
   },
 
