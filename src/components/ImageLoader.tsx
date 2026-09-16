@@ -14,11 +14,10 @@ export function ImageLoader({ isLoading, isDark = false }: { isLoading: boolean;
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.35, ease: 'easeOut' }}
-          className={`absolute inset-0 z-40 flex flex-col items-center justify-center backdrop-blur-sm rounded-xl p-4 select-none ${
-            isDark
+          className={`absolute inset-0 z-40 flex flex-col items-center justify-center backdrop-blur-sm rounded-xl p-4 select-none ${isDark
               ? 'bg-black/85 text-white border border-neutral-800'
               : 'bg-gradient-to-br from-rose-50/95 via-white/90 to-pink-50/95'
-          }`}
+            }`}
         >
           {/* Bouncing hand emoji */}
           <motion.span
@@ -40,11 +39,10 @@ export function ImageLoader({ isLoading, isDark = false }: { isLoading: boolean;
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15, duration: 0.4 }}
-            className={`font-serif text-[13px] sm:text-[14.5px] text-center leading-snug max-w-[270px] px-3 font-medium ${
-              isDark ? 'text-neutral-200' : 'text-gray-800'
-            }`}
+            className={`font-serif text-[13px] sm:text-[14.5px] text-center leading-snug max-w-[270px] px-3 font-medium ${isDark ? 'text-neutral-200' : 'text-gray-800'
+              }`}
           >
-            tried my best but bc of low funds, could'nt afford to buy a server,
+            tried my best,
           </motion.p>
 
           {/* Fun Bangla-English line */}
@@ -52,9 +50,8 @@ export function ImageLoader({ isLoading, isDark = false }: { isLoading: boolean;
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.4 }}
-            className={`font-sans text-[11.5px] sm:text-[12.5px] text-center leading-relaxed max-w-[260px] mt-2 px-2 font-semibold ${
-              isDark ? 'text-amber-300' : 'text-rose-600'
-            }`}
+            className={`font-sans text-[11.5px] sm:text-[12.5px] text-center leading-relaxed max-w-[260px] mt-2 px-2 font-semibold ${isDark ? 'text-amber-300' : 'text-rose-600'
+              }`}
           >
             so please ektu dariye jaa, load hoccheee daraaa pleaseee 🥺🙏
           </motion.p>

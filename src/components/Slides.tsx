@@ -728,6 +728,10 @@ export function SituationalSlide({ index }: { index: number }) {
   const [reactions, setReactions] = useState(0);
   const [situationImageLoaded, setSituationImageLoaded] = useState(false);
 
+  useEffect(() => {
+    setSituationImageLoaded(false);
+  }, [index, situation?.photo]);
+
   if (!situation) return null;
 
   const handlePhotoTap = (e: React.MouseEvent) => {
