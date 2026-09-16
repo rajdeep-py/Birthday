@@ -15,8 +15,8 @@ export function ImageLoader({ isLoading, isDark = false }: { isLoading: boolean;
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.35, ease: 'easeOut' }}
           className={`absolute inset-0 z-40 flex flex-col items-center justify-center backdrop-blur-sm rounded-xl p-4 select-none ${isDark
-              ? 'bg-black/85 text-white border border-neutral-800'
-              : 'bg-gradient-to-br from-rose-50/95 via-white/90 to-pink-50/95'
+            ? 'bg-black/85 text-white border border-neutral-800'
+            : 'bg-gradient-to-br from-rose-50/95 via-white/90 to-pink-50/95'
             }`}
         >
           {/* Bouncing hand emoji */}

@@ -400,10 +400,11 @@ export function NoteSlide({ index }: { index: number }) {
   );
 }
 
-export function RiddleSlide({ index, onUnlock, onNext }: { index: number; onUnlock: () => void; onNext: () => void; key?: string | number }) {
+export function RiddleSlide({ index, onUnlock, onNext, savedAnswer, onSolve }: { index: number; onUnlock: () => void; onNext: () => void; key?: string | number; savedAnswer?: string | null; onSolve?: (riddleIndex: number, answer: string) => void }) {
   const riddle = config.riddles[index];
-  const [selected, setSelected] = useState<string | null>(null);
-  const [status, setStatus] = useState<'correct' | 'wrong' | null>(null);
+  const alreadySolved = savedAnswer === riddle.answer;
+  const [selected, setSelected] = useState<string | null>(alreadySolved ? savedAnswer : null);
+  const [status, setStatus] = useState<'correct' | 'wrong' | null>(alreadySolved ? 'correct' : null);
   const [catSparks, setCatSparks] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -446,6 +447,7 @@ export function RiddleSlide({ index, onUnlock, onNext }: { index: number; onUnlo
       setStatus('correct');
       setCatSparks(true);
       onUnlockRef.current();
+      if (onSolve) onSolve(index, opt);
       timerRef.current = setTimeout(() => {
         safeAdvance();
       }, 1200);
@@ -1133,6 +1135,10 @@ export function CreationSlide({
   const [hearts, setHearts] = useState<{ id: number; x: number; y: number }[]>([]);
   const [creationImageLoaded, setCreationImageLoaded] = useState(false);
 
+  useEffect(() => {
+    setCreationImageLoaded(false);
+  }, [image]);
+
   const handleTap = (e: React.MouseEvent) => {
     e.stopPropagation();
     const id = Date.now();
@@ -1155,7 +1161,7 @@ export function CreationSlide({
       onClick={handleTap}
     >
       {/* Image Loader */}
-      <ImageLoader isLoading={!creationImageLoaded} />
+      <ImageLoader isLoading={!creationImageLoaded} isDark />
 
       {/* Blurred background ambient image for complete coverage */}
       <img

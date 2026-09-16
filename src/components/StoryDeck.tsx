@@ -103,6 +103,7 @@ export default function StoryDeck() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [unlocked, setUnlocked] = useState<Record<number, boolean>>({});
+  const [solvedRiddles, setSolvedRiddles] = useState<Record<number, string>>({});
 
   const slides = useMemo(() => {
     const deck: SlideDef[] = [];
@@ -553,6 +554,8 @@ export default function StoryDeck() {
             index={slide.index!}
             onUnlock={unlockCurrent}
             onNext={handleForceNext}
+            savedAnswer={solvedRiddles[slide.index!] ?? null}
+            onSolve={(riddleIndex, answer) => setSolvedRiddles(prev => ({ ...prev, [riddleIndex]: answer }))}
           />
         );
       case 'memory':
