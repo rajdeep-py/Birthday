@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { config } from '../config';
 import { Heart, Sparkles, MapPin, Calendar, Quote, ArrowRight, Lock, PhoneCall } from 'lucide-react';
+import { ImageLoader } from './ImageLoader';
 
 export function HeyYouSlide() {
   return (
@@ -156,6 +157,7 @@ export function TextSlide({ slide }: { slide: any }) {
 
 export function MemorySlide({ index }: { index: number }) {
   const memory = config.memories[index];
+  const [memoryImageLoaded, setMemoryImageLoaded] = useState(false);
 
   return (
     <div className="w-full flex flex-col items-center justify-center px-3 py-2 text-center select-none pointer-events-none">
@@ -184,10 +186,12 @@ export function MemorySlide({ index }: { index: number }) {
             {/* Washi Tape Strip */}
             <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-16 h-4 bg-amber-100/90 -rotate-2 border-b border-amber-200/50 shadow-2xs z-20 backdrop-blur-xs rounded-xs pointer-events-none" />
             <div className="rounded-xl overflow-hidden shadow-md border-2 border-white relative bg-rose-50/40">
+              <ImageLoader isLoading={!memoryImageLoaded} />
               <img
                 src={memory.photo}
                 alt={memory.title}
-                className="max-h-[235px] sm:max-h-[265px] w-auto max-w-[270px] sm:max-w-[300px] object-contain block group-hover:scale-105 transition-transform duration-500"
+                onLoad={() => setMemoryImageLoaded(true)}
+                className={`max-h-[235px] sm:max-h-[265px] w-auto max-w-[270px] sm:max-w-[300px] object-contain block group-hover:scale-105 transition-all duration-500 ${memoryImageLoaded ? 'opacity-100' : 'opacity-0'}`}
               />
             </div>
           </div>
@@ -214,6 +218,7 @@ export function PhotoSlide({ index }: { index: number }) {
   const photo = config.photos[index];
   const [hearts, setHearts] = useState<{ id: number; x: number; y: number }[]>([]);
   const [isPortrait, setIsPortrait] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const handlePhotoTap = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -261,18 +266,21 @@ export function PhotoSlide({ index }: { index: number }) {
         {/* The Photo Image Container */}
         <div className={`w-full relative overflow-hidden rounded-xs bg-gray-50/60 flex items-center justify-center ${isPortrait ? 'h-[360px] sm:h-[400px]' : 'h-[260px] sm:h-[295px]'
           }`}>
+          {/* Image Loader */}
+          <ImageLoader isLoading={!imageLoaded} />
           {/* Ambient blurred backdrop so any subtle aspect difference has a dreamy romantic glow */}
           <img
             src={photo.src}
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover blur-lg opacity-25 scale-110 pointer-events-none"
+            className={`absolute inset-0 w-full h-full object-cover blur-lg opacity-25 scale-110 pointer-events-none transition-opacity duration-500 ${imageLoaded ? 'opacity-25' : 'opacity-0'}`}
           />
           {/* Main image: object-contain ensures 100% of the width and height fits without ANY cropping */}
           <img
             src={photo.src}
             alt={photo.caption}
             onLoad={(e) => {
+              setImageLoaded(true);
               const img = e.currentTarget;
               if (img.naturalHeight > img.naturalWidth * 1.15) {
                 setIsPortrait(true);
@@ -280,7 +288,7 @@ export function PhotoSlide({ index }: { index: number }) {
                 setIsPortrait(false);
               }
             }}
-            className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 ease-out"
+            className={`relative z-10 w-full h-full object-contain group-hover:scale-105 transition-all duration-700 ease-out ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
           />
         </div>
 
@@ -710,6 +718,7 @@ export function SituationalSlide({ index }: { index: number }) {
   const situation = config.situations?.[index];
   const [hearts, setHearts] = useState<{ id: number; x: number; y: number; emoji: string }[]>([]);
   const [reactions, setReactions] = useState(0);
+  const [situationImageLoaded, setSituationImageLoaded] = useState(false);
 
   if (!situation) return null;
 
@@ -799,19 +808,22 @@ export function SituationalSlide({ index }: { index: number }) {
             </div>
           ) : (
             <>
+              {/* Image Loader */}
+              <ImageLoader isLoading={!situationImageLoaded} />
               {/* Ambient Blurred Backdrop */}
               <img
                 src={situation.photo}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 w-full h-full object-cover blur-lg opacity-30 scale-110 pointer-events-none"
+                className={`absolute inset-0 w-full h-full object-cover blur-lg scale-110 pointer-events-none transition-opacity duration-500 ${situationImageLoaded ? 'opacity-30' : 'opacity-0'}`}
               />
 
               {/* Individual Photo - Fits completely without cropping */}
               <img
                 src={situation.photo}
                 alt={situation.caption || situation.title}
-                className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 ease-out"
+                onLoad={() => setSituationImageLoaded(true)}
+                className={`relative z-10 w-full h-full object-contain group-hover:scale-105 transition-all duration-700 ease-out ${situationImageLoaded ? 'opacity-100' : 'opacity-0'}`}
               />
 
               {/* Photo Bottom Caption Gradient Strip */}
@@ -1107,6 +1119,7 @@ export function CreationSlide({
   clickCount?: number;
 }) {
   const [hearts, setHearts] = useState<{ id: number; x: number; y: number }[]>([]);
+  const [creationImageLoaded, setCreationImageLoaded] = useState(false);
 
   const handleTap = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -1129,20 +1142,24 @@ export function CreationSlide({
       className="relative w-full h-full min-h-[500px] sm:min-h-[600px] flex flex-col items-center justify-center overflow-hidden select-none cursor-pointer"
       onClick={handleTap}
     >
+      {/* Image Loader */}
+      <ImageLoader isLoading={!creationImageLoaded} />
+
       {/* Blurred background ambient image for complete coverage */}
       <img
         src={image || "/assets/my_creation.png"}
         alt=""
-        className="absolute inset-0 w-full h-full object-cover filter blur-xl scale-110 opacity-60 pointer-events-none"
+        className={`absolute inset-0 w-full h-full object-cover filter blur-xl scale-110 pointer-events-none transition-opacity duration-500 ${creationImageLoaded ? 'opacity-60' : 'opacity-0'}`}
       />
 
       {/* Crisp Foreground Full-Screen Image */}
       <motion.img
         initial={{ opacity: 0, scale: 0.97 }}
-        animate={{ opacity: 1, scale: 1 }}
+        animate={{ opacity: creationImageLoaded ? 1 : 0, scale: 1 }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         src={image || "/assets/my_creation.png"}
         alt="My Creation"
+        onLoad={() => setCreationImageLoaded(true)}
         className="relative z-10 w-full h-full max-h-[850px] object-contain pointer-events-none drop-shadow-2xl"
       />
 
