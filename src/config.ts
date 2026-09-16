@@ -26,67 +26,76 @@ export const config = {
 
   riddles: [
     {
-      question: "If I had to bring you one flower without asking you what you wanted, which one would I bring?",
-      options: ["Rose", "Tulip", "Sunflower", "Lily"],
-      answer: "Sunflower",
-      successMessage: "You remembered. ❤️",
-      wrongMessage: "Hmm... that's not what I would've answered. 😭"
+      question: "What makes you feel truly loved by someone?",
+      options: ["Being understood without explaining everything", "Having someone consistently show up for me", "Feeling completely free to be myself", "Knowing someone chooses me, even on difficult days"],
+      answer: "",
+      successMessage: "That says so much about you. ❤️",
+      wrongMessage: ""
     },
     {
-      question: "When you're upset, what do you need most?",
-      options: ["Someone to ask what's wrong", "Me to give you space", "Someone to stay beside you", "To sleep"],
-      answer: "Someone to stay beside you",
-      successMessage: "Obviously. ❤️",
-      wrongMessage: "Are you sure? Try again. ❤️"
+      question: "What is harder for you to do?",
+      options: ["Trust someone completely", "Tell someone that I need them", "Admit that I've hurt someone", "Let someone go when I still care"],
+      answer: "",
+      successMessage: "Honesty like that takes courage. ❤️",
+      wrongMessage: ""
     },
     {
-      question: "If you had to survive one month with only one food, what are you choosing?",
-      options: ["Fuchka", "Biriyani", "Ice cream", "Bhaat-DAL-Aloo Bhaja"],
-      answer: "Biriyani",
-      successMessage: "Obviously. ❤️",
-      wrongMessage: "Are you sure? Try again. ❤️"
+      question: "When someone becomes too emotionally attached to you, what do you usually feel first?",
+      options: ["Loved", "Responsible", "Overwhelmed", "Afraid of hurting them"],
+      answer: "",
+      successMessage: "I hear you. ❤️",
+      wrongMessage: ""
     },
     {
-      question: "What happens when this shy, introverted girl becomes entirely comfortable with someone?",
-      options: ["You fall asleep", "You won't stop talking 😂", "You ignores them", "You starts drawing"],
-      answer: "You won't stop talking 😂",
-      successMessage: "And I wouldn't have it any other way. ❤️",
-      wrongMessage: "Chupp! You know the real answer. ❤️"
+      question: "What do you think can quietly destroy a beautiful connection?",
+      options: ["Lack of communication", "Taking each other for granted", "Unspoken expectations", "Growing apart without admitting it"],
+      answer: "",
+      successMessage: "You're not wrong. ❤️",
+      wrongMessage: ""
     },
     {
-      question: "What is the one thing you do when something is wrong, even without saying that something is wrong?",
-      options: ["You yell", "You go quiet", "You cry", "You walk away"],
-      answer: "You go quiet",
-      successMessage: "And somehow, I notice. ❤️",
-      wrongMessage: "Hmm... that's not what I would've answered. 😭"
+      question: "If you had to choose between love and peace, what would you choose?",
+      options: ["Love, even if it's complicated", "Peace, even if it means losing someone", "A love that gives me peace", "I don't think I could choose"],
+      answer: "",
+      successMessage: "There's no wrong answer here. ❤️",
+      wrongMessage: ""
     },
     {
-      question: "If I gave you ₹10,000 and said spend it entirely on something, what would you buy?",
-      options: ["Buy a dress", "Savings for a new phone", "Skincare products", "Art & Craft essentials"],
-      answer: "Art & Craft essentials",
-      successMessage: "And I never want to take that for granted. ❤️",
-      wrongMessage: "Wait, what? 😭 Try again."
+      question: "What does \"choosing someone\" mean to you?",
+      options: ["Being there when they need me", "Making them feel secure", "Accepting them despite their imperfections", "Continuing to choose them even after difficult days"],
+      answer: "",
+      successMessage: "That's beautiful. ❤️",
+      wrongMessage: ""
     },
     {
-      question: "Which of these moments is one of your favorite memories of us?",
-      options: ["Shopping at Gariahat", "Bagbazar Ghat - A ferry ride over the Ganga", "Friends' Reunion", "Prottek muhurtoi priyo tor sathe"],
-      answer: "Prottek muhurtoi priyo tor sathe",
-      successMessage: "That's my absolute favorite part of our story. ❤️",
-      wrongMessage: "Try again, sunflower. 🌻"
+      question: "Can you genuinely care about someone without wanting them in your future?",
+      options: ["Yes, absolutely", "Yes, but it's painful", "Only after enough time has passed", "I don't think I can separate the two"],
+      answer: "",
+      successMessage: "I understand. ❤️",
+      wrongMessage: ""
     },
     {
-      question: "What scares you more in a relationship?",
-      options: ["Losing someone you love", "Being misunderstood", "Losing my independence", "Loving someone who doesn't love me equally"],
-      answer: "Losing someone you love",
-      successMessage: "I was always there to love you.",
-      wrongMessage: "HeHe! ❤️"
+      question: "If someone you once loved came back into your life after a long silence, what would you want first?",
+      options: ["To know why they came back", "To rebuild the friendship slowly", "To understand what we both feel now", "To leave the past where it belongs"],
+      answer: "",
+      successMessage: "That tells me a lot about who you are. ❤️",
+      wrongMessage: ""
     },
     {
-      question: "What's one thing you love receiving because it feels more personal than expensive?",
-      options: ["Handmade/personalized gifts", "Jewellery", "Handwritten Letters", "Clothes"],
-      answer: "Handmade/personalized gifts",
-      successMessage: "Because it's from the heart, and that's what matters most. ❤️",
-      wrongMessage: "Hmm... try again. ❤️"
+      question: "What would you want the person beside you to understand without you ever having to ask for it?",
+      options: ["When I need space", "When I need reassurance", "When I'm hurting but don't say it", "How much their presence actually means to me"],
+      answer: "",
+      successMessage: "I'll try to remember that. Always. ❤️",
+      wrongMessage: ""
+    },
+    {
+      question: "If you could know the completely honest answer to ONE question about a person from your past, what would you ask?",
+      options: ["Did you ever genuinely love me?", "Did I ever hurt you more than I realised?", "What did I actually mean to you?", "Do you ever wonder what could have been?"],
+      answer: "",
+      successMessage: "",
+      wrongMessage: "",
+      isFinal: true,
+      closingMessage: "Some questions are worth asking.\nSome answers are worth discovering for yourself."
     }
   ],
 
@@ -366,5 +375,5 @@ export const config = {
     }
   ],
 
-  birthdayMessage: `Happy Birthday to you. ❤️\n\nI don't know if I can ever properly explain how much you mean to me, but I hope somewhere between all these little memories, riddles and photographs, you felt it.\n\nI love your smile.\n\nI love your chubby cheeks.\n\nI love your eyes.\n\nI love your childishness.\n\nI love how ambitious you are.\n\nI love how you can be stubborn, moody, quiet and then suddenly talk for hours when you're happy.\n\nBut more than all of that, I love the person you are underneath everything.\n\nThe person whom I can trust without any second thought.\n\nThe person who had let me see the parts of her that she doesn't show everyone.\n\nAnd even when you go quiet and don't tell me what's wrong, I hope you always know that I'll notice.\n\nI'll be there.\n\nI hope this year takes you closer to every ambition you've ever had.\n\nI hope you never stop believing in the girl who wants so much from life.\n\nAnd I hope, somewhere along the way, you always remember that there is someone who believes in you too.\n\nHappy Birthday Rikta 🌻❤️\n\nAnd no matter how many birthdays come after this one...\n\nI wish to celebrate a lot of them with you, even if I am not there in future, I will be just a phone call away!.`
+  birthdayMessage: `I don't know if I can ever properly explain how much you mean to me, but I hope somewhere between all these little memories, riddles and photographs, you felt it.\n\nI love your smile.\n\nI love your chubby cheeks.\n\nI love your eyes.\n\nI love your childishness.\n\nI love how ambitious you are.\n\nI love how you can be stubborn, moody, quiet and then suddenly talk for hours when you're happy.\n\nBut more than all of that, I love the person you are underneath everything.\n\nThe person whom I can trust without any second thought.\n\nThe person who had let me see the parts of her that she doesn't show everyone.\n\nAnd even when you go quiet and don't tell me what's wrong, I hope you always know that I'll notice.\n\nI'll be there.\n\nI hope this year takes you closer to every ambition you've ever had.\n\nI hope you never stop believing in the girl who wants so much from life.\n\nAnd I hope, somewhere along the way, you always remember that there is someone who believes in you too.\n\nHappy Birthday Rikta 🌻❤️\n\nAnd no matter how many birthdays come after this one...\n\nI wish to celebrate a lot of them with you, even if I am not there in future, I will be just a phone call away!.`
 };

@@ -1,13 +1,13 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { config } from '../config';
-import { TextSlide, RiddleSlide, MemorySlide, PhotoSlide, NoteSlide, HugSlide, SituationalSlide, PromiseSlide, CreationSlide, ThingsNeverKnewSlide, ReturnGiftSlide } from './Slides';
+import { TextSlide, RiddleSlide, MemorySlide, PhotoSlide, NoteSlide, HugSlide, SituationalSlide, PromiseSlide, CreationSlide } from './Slides';
 import { CatSlideBackground, CatTransitionScamper } from './CatBackground';
 import { ChevronLeft, ArrowRight, Music, VolumeX } from 'lucide-react';
 
 type SlideDef = {
   id: string;
-  type: 'text' | 'riddle' | 'memory' | 'photo' | 'note' | 'hug' | 'situation' | 'promise' | 'creation' | 'things-never-knew' | 'last-gift';
+  type: 'text' | 'riddle' | 'memory' | 'photo' | 'note' | 'hug' | 'situation' | 'promise' | 'creation';
   content?: string;
   align?: 'center' | 'left';
   heading?: boolean;
@@ -112,8 +112,8 @@ export default function StoryDeck() {
     deck.push({
       id: 'intro-2',
       type: 'text',
-      content: "Think you can hide anything from me?\nLet's test how well I know every little secret about you.",
-      subtext: "Spoiler: I notice everything. Especially you. 🌻"
+      content: "Before we go any further...\nI want to know what's really on your mind.",
+      subtext: "Be honest. There are no wrong answers here. 🌻"
     });
 
     config.riddles.forEach((_, i) => {
@@ -123,19 +123,19 @@ export default function StoryDeck() {
     deck.push({
       id: 'riddle-end-1',
       type: 'text',
-      content: "Okay... maybe I'm a little hopelessly obsessed with you. ❤️",
-      subtext: "Score: 100% in loving you 🤭"
+      content: "Thank you for being honest. ❤️",
+      subtext: "Your answers say more than you think."
     });
     deck.push({
       id: 'riddle-end-2',
       type: 'text',
-      content: "But knowing little facts about you isn't even my favourite part.",
-      subtext: "Guess what is? ➔"
+      content: "But the most honest thing I know about you\nisn't something you'd ever say out loud.",
+      subtext: "It's something I see. ➔"
     });
     deck.push({
       id: 'riddle-end-3',
       type: 'text',
-      content: "My favourite part is living every single memory with you.\n\nEvery glance. Every laugh. Every ordinary moment.",
+      content: "It's in every memory we've shared.\n\nEvery glance. Every laugh. Every ordinary moment.",
       subtext: "Ready to walk down memory lane? 🥺❤️"
     });
 
@@ -339,14 +339,7 @@ export default function StoryDeck() {
       content: "I love you. Today, tomorrow, and maybe forever? haha, just joking, oboshyoi chirokal!",
       subtext: "Endless love, always yours."
     });
-    deck.push({
-      id: 'final-things-never-knew',
-      type: 'things-never-knew',
-    });
-    deck.push({
-      id: 'final-last-gift',
-      type: 'last-gift',
-    });
+
     deck.push({
       id: 'final-creation',
       type: 'creation',
@@ -432,8 +425,7 @@ export default function StoryDeck() {
     if (currentSlide.type === 'riddle' && !unlocked[currentIndex]) return false;
     if (currentSlide.type === 'hug' && !unlocked[currentIndex]) return false;
     if (currentSlide.type === 'promise' && !unlocked[currentIndex]) return false;
-    if (currentSlide.type === 'things-never-knew' && !unlocked[currentIndex]) return false;
-    if (currentSlide.type === 'last-gift' && !unlocked[currentIndex]) return false;
+
     return true;
   };
 
@@ -579,27 +571,14 @@ export default function StoryDeck() {
             clickCount={lastSlideClicks}
           />
         );
-      case 'things-never-knew':
-        return (
-          <ThingsNeverKnewSlide
-            onUnlock={unlockCurrent}
-            onNext={handleForceNext}
-          />
-        );
-      case 'last-gift':
-        return (
-          <ReturnGiftSlide
-            onUnlock={unlockCurrent}
-            onNext={handleForceNext}
-          />
-        );
+
       default:
         return null;
     }
   };
 
   const isHeyYouSlide = currentSlide?.id === 'intro-1';
-  const isDarkSlide = currentSlide?.type === 'creation' || currentSlide?.type === 'things-never-knew' || currentSlide?.type === 'last-gift';
+  const isDarkSlide = currentSlide?.type === 'creation';
 
   return (
     <div className="fixed inset-0 bg-[#F5F2EB] flex items-center justify-center sm:p-6 overflow-hidden">
@@ -773,11 +752,7 @@ export default function StoryDeck() {
                     ? 'Tap Hug 🤗'
                     : currentSlide.type === 'promise'
                       ? 'Keep Promise 🤞'
-                      : currentSlide.type === 'things-never-knew'
-                        ? 'Tap story 🌙'
-                        : currentSlide.type === 'last-gift'
-                          ? 'Open Gift 🎁'
-                          : 'Pick answer 🌻'
+                      : 'Pick answer 🌻'
                   : currentIndex === slides.length - 1
                     ? lastSlideClicks === 1
                       ? 'Tap again 🔄'

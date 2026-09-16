@@ -402,9 +402,12 @@ export function NoteSlide({ index }: { index: number }) {
 
 export function RiddleSlide({ index, onUnlock, onNext, savedAnswer, onSolve }: { index: number; onUnlock: () => void; onNext: () => void; key?: string | number; savedAnswer?: string | null; onSolve?: (riddleIndex: number, answer: string) => void }) {
   const riddle = config.riddles[index];
-  const alreadySolved = savedAnswer === riddle.answer;
+  const isFinal = !!(riddle as any).isFinal;
+  const closingMessage = (riddle as any).closingMessage as string | undefined;
+  const alreadySolved = !!savedAnswer;
   const [selected, setSelected] = useState<string | null>(alreadySolved ? savedAnswer : null);
-  const [status, setStatus] = useState<'correct' | 'wrong' | null>(alreadySolved ? 'correct' : null);
+  const [answered, setAnswered] = useState(alreadySolved);
+  const [showClosing, setShowClosing] = useState(false);
   const [catSparks, setCatSparks] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -438,21 +441,32 @@ export function RiddleSlide({ index, onUnlock, onNext, savedAnswer, onSolve }: {
   };
 
   const handleGuess = (opt: string) => {
-    if (status === 'correct') {
-      safeAdvance();
+    if (answered) {
+      if (!isFinal || showClosing) {
+        safeAdvance();
+      }
       return;
     }
     setSelected(opt);
-    if (opt === riddle.answer) {
-      setStatus('correct');
+    setAnswered(true);
+    onUnlockRef.current();
+    if (onSolve) onSolve(index, opt);
+
+    if (isFinal) {
+      // For the final question: pause, then show closing message
+      timerRef.current = setTimeout(() => {
+        setShowClosing(true);
+        setCatSparks(true);
+        // Auto-advance after showing closing message
+        timerRef.current = setTimeout(() => {
+          safeAdvance();
+        }, 5000);
+      }, 2500);
+    } else {
       setCatSparks(true);
-      onUnlockRef.current();
-      if (onSolve) onSolve(index, opt);
       timerRef.current = setTimeout(() => {
         safeAdvance();
       }, 1200);
-    } else {
-      setStatus('wrong');
     }
   };
 
@@ -460,7 +474,7 @@ export function RiddleSlide({ index, onUnlock, onNext, savedAnswer, onSolve }: {
     <div
       className="w-full flex flex-col items-center px-3 relative select-none pointer-events-auto"
       onClick={(e) => {
-        if (status === 'correct') {
+        if (answered && (!isFinal || showClosing)) {
           e.stopPropagation();
           safeAdvance();
         }
@@ -494,7 +508,7 @@ export function RiddleSlide({ index, onUnlock, onNext, savedAnswer, onSolve }: {
       {/* Riddle Header Badge */}
       <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-50 border border-amber-200/80 text-[9.5px] sm:text-[10px] font-sans tracking-[0.2em] uppercase font-bold text-amber-800 mb-3.5">
         <span>🌻</span>
-        <span>RIDDLE 0{index + 1} OF 09 • GUESS CAREFULLY</span>
+        <span>{index + 1 < 10 ? `0${index + 1}` : index + 1} OF 10 • TAKE YOUR TIME</span>
       </div>
 
       <p className="font-serif text-xl sm:text-2xl text-center text-gray-900 mb-8 leading-snug px-2 font-medium">
@@ -505,46 +519,61 @@ export function RiddleSlide({ index, onUnlock, onNext, savedAnswer, onSolve }: {
       <div className="space-y-2.5 w-full max-w-[310px] mb-6">
         {riddle.options.map(opt => {
           const isSelected = selected === opt;
-          const isCorrect = status === 'correct' && opt === riddle.answer;
-          const isWrong = status === 'wrong' && isSelected;
+          const isChosen = answered && isSelected;
+          const isOther = answered && !isSelected;
 
           return (
             <button
               key={opt}
               onClick={(e) => { e.stopPropagation(); handleGuess(opt); }}
-              className={`pointer-events-auto relative z-30 w-full text-left px-4 py-3.5 rounded-2xl font-sans text-sm tracking-wide transition-all duration-300 border flex items-center justify-between cursor-pointer ${isCorrect
+              className={`pointer-events-auto relative z-30 w-full text-left px-4 py-3.5 rounded-2xl font-sans text-sm tracking-wide transition-all duration-300 border flex items-center justify-between cursor-pointer ${isChosen
                 ? "bg-[#FFF4F4] border-red-300 text-red-900 shadow-md scale-[1.02] ring-2 ring-red-200"
-                : isWrong
+                : isOther
                   ? "bg-gray-50/70 border-gray-200 text-gray-400 opacity-60"
                   : "bg-white/90 border-rose-100/80 text-gray-700 backdrop-blur-sm shadow-xs hover:shadow-md hover:border-rose-200 active:scale-[0.98]"
                 }`}
-              disabled={status === 'correct' && !isCorrect}
+              disabled={answered && !isChosen}
             >
               <span className="font-medium">{opt}</span>
-              {isCorrect && (
-                <img src="/assets/sunflower1.png" alt="Correct" className="w-5 h-5 object-contain inline-block animate-bounce" />
+              {isChosen && (
+                <img src="/assets/sunflower1.png" alt="Selected" className="w-5 h-5 object-contain inline-block animate-bounce" />
               )}
             </button>
           );
         })}
       </div>
 
-      {/* Feedback Message */}
-      <div className="h-16 flex flex-col items-center justify-center text-center">
+      {/* Feedback / Closing Message */}
+      <div className="h-20 flex flex-col items-center justify-center text-center">
         <AnimatePresence mode="wait">
-          {status && (
+          {isFinal && showClosing && closingMessage ? (
             <motion.div
-              key={status}
+              key="closing"
+              initial={{ opacity: 0, y: 12, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
+              className="flex flex-col items-center"
+            >
+              {closingMessage.split('\n').map((line, i) => (
+                <p key={i} className="font-serif text-[15px] sm:text-[17px] text-center italic text-gray-700 font-medium leading-relaxed">
+                  {line}
+                </p>
+              ))}
+            </motion.div>
+          ) : answered && !isFinal && riddle.successMessage ? (
+            <motion.div
+              key="success"
               initial={{ opacity: 0, y: 8, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0 }}
               className="flex flex-col items-center"
             >
-              <p className={`font-serif text-[16px] sm:text-[17px] text-center italic ${status === 'correct' ? 'text-red-700 font-medium' : 'text-gray-500'}`}>
-                {status === 'correct' ? riddle.successMessage : riddle.wrongMessage}
+              <p className="font-serif text-[16px] sm:text-[17px] text-center italic text-red-700 font-medium">
+                {riddle.successMessage}
               </p>
             </motion.div>
-          )}
+          ) : null}
         </AnimatePresence>
       </div>
     </div>
