@@ -1198,4 +1198,632 @@ export function CreationSlide({
   );
 }
 
+export function ThingsNeverKnewSlide({
+  onUnlock,
+  onNext,
+}: {
+  onUnlock?: () => void;
+  onNext?: () => void;
+}) {
+  const confessions = [
+    {
+      num: "01",
+      text: "There were days I checked my phone hoping it was you.",
+    },
+    {
+      num: "02",
+      text: "There were songs I stopped listening to because they sounded too much like you.",
+    },
+    {
+      num: "03",
+      text: "There were places I wanted to take you but never got the chance.",
+    },
+    {
+      num: "04",
+      text: "There were things that happened in my day that I automatically wanted to tell you.",
+    },
+    {
+      num: "05",
+      text: "Sometimes I saw something beautiful and my first thought was,\n“She would probably like this.”",
+    },
+  ];
+
+  const [step, setStep] = useState(0);
+  const [blackoutFinished, setBlackoutFinished] = useState(false);
+  const [sunflowerAppeared, setSunflowerAppeared] = useState(false);
+
+  // Blackout timer for 2.5s before revealing "So I kept loving you quietly."
+  useEffect(() => {
+    if (step === 6) {
+      setBlackoutFinished(false);
+      const timer = setTimeout(() => {
+        setBlackoutFinished(true);
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [step]);
+
+  // Sunflower appearance in step 7 unlocks slide navigation
+  useEffect(() => {
+    if (step === 7) {
+      const timer = setTimeout(() => {
+        setSunflowerAppeared(true);
+        onUnlock?.();
+      }, 1600);
+      return () => clearTimeout(timer);
+    }
+  }, [step, onUnlock]);
+
+  const handleTap = () => {
+    if (step < 5) {
+      setStep(prev => prev + 1);
+    } else if (step === 5) {
+      setStep(6);
+    }
+  };
+
+  return (
+    <div
+      onClick={handleTap}
+      className={`relative w-full h-full min-h-[560px] sm:min-h-[640px] max-w-[380px] flex flex-col justify-between items-center text-center p-6 sm:p-8 bg-black transition-colors duration-1000 select-none pointer-events-auto ${step < 6 ? 'cursor-pointer' : ''
+        }`}
+    >
+      {/* Top subtle header - hidden during pitch blackout and birthday message */}
+      <div className="w-full pt-2 sm:pt-4 transition-opacity duration-700">
+        <motion.p
+          animate={{ opacity: step === 6 && !blackoutFinished ? 0 : 1 }}
+          className="font-mono text-[10.5px] sm:text-[11px] uppercase tracking-[0.28em] text-neutral-400 font-medium"
+        >
+          {step === 7 ? "🌙 on this day" : "There are things you never knew."}
+        </motion.p>
+      </div>
+
+      {/* Main Interactive Stage */}
+      <div className="relative w-full flex-1 flex flex-col items-center justify-center py-6">
+        <AnimatePresence mode="wait">
+          {/* Confessions 01 to 05 */}
+          {step < 5 && (
+            <motion.div
+              key={`confession-${step}`}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -14 }}
+              transition={{ duration: 0.45, ease: "easeOut" }}
+              className="flex flex-col items-center justify-center space-y-4 px-2"
+            >
+              <span className="font-mono text-xs sm:text-sm tracking-[0.3em] text-neutral-400 font-semibold">
+                {confessions[step].num}
+              </span>
+              <p className="font-serif text-[17.5px] sm:text-[19.5px] text-neutral-100 leading-relaxed font-normal whitespace-pre-line max-w-[310px]">
+                {confessions[step].text}
+              </p>
+            </motion.div>
+          )}
+
+          {/* Step 5: Final slower confession */}
+          {step === 5 && (
+            <motion.div
+              key="final-confession"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.8, ease: "easeOut" }}
+              className="flex flex-col items-center justify-center space-y-4 px-3"
+            >
+              <p className="font-serif text-[17.5px] sm:text-[19.5px] text-neutral-100 leading-relaxed font-normal max-w-[320px]">
+                And there were so many times I wanted to tell you how much you meant to me...
+              </p>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.2, duration: 1.5 }}
+                className="font-serif text-[15px] sm:text-[16.5px] text-neutral-300 italic leading-relaxed font-light max-w-[300px]"
+              >
+                but I was afraid that knowing would make you uncomfortable.
+              </motion.p>
+            </motion.div>
+          )}
+
+          {/* Step 6: Blackout and then "So I kept loving you quietly." */}
+          {step === 6 && (
+            <div key="blackout-container" className="flex flex-col items-center justify-center">
+              {blackoutFinished && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 1.6, ease: "easeInOut" }}
+                  className="flex flex-col items-center justify-center space-y-7"
+                >
+                  <p className="font-serif text-[20px] sm:text-[23px] text-neutral-100 font-normal tracking-wide italic">
+                    So I kept loving you quietly.
+                  </p>
+
+                  <motion.button
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.2, duration: 0.8 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setStep(7);
+                    }}
+                    className="pointer-events-auto px-5 py-2 rounded-full border border-neutral-700/80 bg-neutral-900/80 hover:bg-neutral-800 text-neutral-300 hover:text-white font-mono text-[11px] tracking-[0.2em] uppercase transition-all cursor-pointer flex items-center gap-2 shadow-sm group"
+                  >
+                    <span>continue</span>
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </motion.button>
+                </motion.div>
+              )}
+            </div>
+          )}
+
+          {/* Step 7: The Unconditional Birthday Wish + Sunflower */}
+          {step === 7 && (
+            <motion.div
+              key="birthday-wish"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
+              className="flex flex-col items-center justify-center space-y-4 px-2 max-w-[340px]"
+            >
+              <p className="font-serif text-[16px] sm:text-[17.5px] text-neutral-200 leading-relaxed font-normal">
+                And today, on your birthday,<br />
+                I'm not asking you for anything.
+              </p>
+
+              <div className="space-y-1 text-[13px] sm:text-[14px] font-sans text-neutral-400 tracking-wide font-light">
+                <p>Not an answer.</p>
+                <p>Not a promise.</p>
+                <p>Not even a place in your life.</p>
+              </div>
+
+              <div className="pt-2 space-y-1">
+                <p className="font-serif text-[18px] sm:text-[20px] text-neutral-100 font-medium">
+                  Just be happy.
+                </p>
+                <p className="font-sans text-xs sm:text-sm text-neutral-400 font-light italic">
+                  That's the only thing I still want for you.
+                </p>
+              </div>
+
+              {/* Tiny sunflower 🌻 slowly appearing */}
+              <AnimatePresence>
+                {sunflowerAppeared && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.4 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 2, ease: "easeOut" }}
+                    className="pt-2 flex flex-col items-center gap-2 select-none"
+                  >
+                    <span className="text-3xl sm:text-4xl filter drop-shadow-[0_0_18px_rgba(234,179,8,0.5)] animate-pulse">
+                      🌻
+                    </span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Proceed to One Last Gift button */}
+              {sunflowerAppeared && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8, duration: 0.6 }}
+                  className="pt-3"
+                >
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onNext?.();
+                    }}
+                    className="pointer-events-auto px-5 py-2 rounded-full border border-neutral-700 bg-neutral-900/90 hover:bg-neutral-800 text-neutral-200 hover:text-white font-sans text-xs tracking-wider transition-all cursor-pointer inline-flex items-center gap-2 shadow-md group"
+                  >
+                    <span>One Last Gift</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform text-amber-400" />
+                  </button>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Bottom status / tap hint */}
+      <div className="w-full pb-2 transition-opacity duration-500">
+        {step < 5 && (
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              {confessions.map((_, i) => (
+                <span
+                  key={i}
+                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === step ? 'bg-neutral-300 w-3' : i < step ? 'bg-neutral-600' : 'bg-neutral-800'
+                    }`}
+                />
+              ))}
+            </div>
+            <span className="text-[10px] font-mono tracking-widest text-neutral-400 uppercase">
+              tap screen
+            </span>
+          </div>
+        )}
+        {step === 5 && (
+          <span className="text-[10px] font-mono tracking-widest text-neutral-400 uppercase animate-pulse">
+            tap to continue
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export function ReturnGiftSlide({
+  onUnlock,
+  onNext,
+}: {
+  onUnlock?: () => void;
+  onNext?: () => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [giftStep, setGiftStep] = useState(0);
+  const [isDissolved, setIsDissolved] = useState(false);
+  const [sparkles, setSparkles] = useState<{ id: number; x: number; y: number }[]>([]);
+
+  const handleOpen = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (!isOpen) {
+      setIsOpen(true);
+      setGiftStep(1);
+      const newSparkles = Array.from({ length: 12 }).map((_, i) => ({
+        id: Date.now() + i,
+        x: -35 + Math.random() * 70,
+        y: -30 - Math.random() * 50,
+      }));
+      setSparkles(newSparkles);
+      setTimeout(() => setSparkles([]), 1400);
+    }
+  };
+
+  const handleStepForward = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (giftStep === 1) {
+      setGiftStep(2);
+    } else if (giftStep === 2) {
+      setGiftStep(3);
+    } else if (giftStep === 3) {
+      setGiftStep(4);
+      setIsDissolved(true);
+      onUnlock?.();
+    }
+  };
+
+  return (
+    <div className="relative w-full h-full min-h-[580px] sm:min-h-[640px] max-w-[380px] flex flex-col justify-between items-center text-center p-5 sm:p-7 bg-black select-none pointer-events-auto">
+      {/* Top Title Tag */}
+      <div className="w-full pt-1 sm:pt-3">
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-900/90 border border-neutral-800 shadow-xs"
+        >
+          <span className="text-[10px]">🎁</span>
+          <span className="font-mono text-[9.5px] sm:text-[10.5px] uppercase tracking-[0.24em] text-neutral-300 font-medium">
+            If I Could Give You One Last Gift
+          </span>
+        </motion.div>
+      </div>
+
+      {/* Center 3D Box & Content Container */}
+      <div className="relative w-full flex-1 flex flex-col items-center justify-center py-4">
+        {/* 3D Gift Box Stage (Dissolves in step 4) */}
+        {!isDissolved && (
+          <div className="relative flex flex-col items-center justify-center my-2">
+            <div
+              className="relative w-40 h-36 flex items-center justify-center cursor-pointer"
+              style={{ perspective: '800px' }}
+              onClick={() => {
+                if (!isOpen) handleOpen();
+              }}
+            >
+              {/* Floating Sparkles on Box Open */}
+              <AnimatePresence>
+                {sparkles.map(s => (
+                  <motion.span
+                    key={s.id}
+                    initial={{ opacity: 1, scale: 0.3, x: 0, y: 0 }}
+                    animate={{ opacity: 0, scale: 1.4, x: s.x, y: s.y }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 1.2, ease: "easeOut" }}
+                    className="absolute z-40 text-sm pointer-events-none filter drop-shadow-md"
+                  >
+                    ✨
+                  </motion.span>
+                ))}
+              </AnimatePresence>
+
+              {/* 3D Cube Assembly */}
+              <motion.div
+                animate={
+                  isOpen
+                    ? { rotateX: -26, rotateY: 34, y: 8 }
+                    : {
+                      rotateX: [-16, -22, -16],
+                      rotateY: [28, 38, 28],
+                      y: [0, -5, 0],
+                    }
+                }
+                transition={
+                  isOpen
+                    ? { duration: 0.8, ease: "easeOut" }
+                    : { repeat: Infinity, duration: 6, ease: "easeInOut" }
+                }
+                style={{ transformStyle: 'preserve-3d' }}
+                className="relative w-28 h-24"
+              >
+                {/* 3D Box Base: Front Face */}
+                <div
+                  className="absolute inset-0 bg-gradient-to-b from-[#251f33] via-[#1a1626] to-[#0f0d17] border border-amber-500/25 rounded-sm flex items-center justify-center shadow-lg"
+                  style={{ transform: 'translateZ(56px)' }}
+                >
+                  <div className="absolute inset-y-0 w-4 bg-gradient-to-r from-amber-600 via-amber-300 to-amber-600 shadow-[0_0_10px_rgba(245,158,11,0.4)]" />
+                </div>
+
+                {/* Back Face */}
+                <div
+                  className="absolute inset-0 bg-gradient-to-b from-[#1b1726] to-[#0b0912] border border-amber-500/15"
+                  style={{ transform: 'rotateY(180deg) translateZ(56px)' }}
+                >
+                  <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-4 bg-gradient-to-r from-amber-700 via-amber-400 to-amber-700 opacity-60" />
+                </div>
+
+                {/* Right Face */}
+                <div
+                  className="absolute inset-0 bg-gradient-to-b from-[#1c1827] to-[#0e0c15] border border-amber-500/20"
+                  style={{ transform: 'rotateY(90deg) translateZ(56px)' }}
+                >
+                  <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-4 bg-gradient-to-r from-amber-600 via-amber-400 to-amber-600 opacity-75" />
+                </div>
+
+                {/* Left Face */}
+                <div
+                  className="absolute inset-0 bg-gradient-to-b from-[#191524] to-[#0b0912] border border-amber-500/15"
+                  style={{ transform: 'rotateY(-90deg) translateZ(56px)' }}
+                >
+                  <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-4 bg-gradient-to-r from-amber-700 via-amber-500 to-amber-700 opacity-50" />
+                </div>
+
+                {/* Interior Velvet Floor (visible when opened) */}
+                <div
+                  className="absolute inset-0 bg-neutral-950 border border-neutral-800 flex items-center justify-center"
+                  style={{ transform: 'rotateX(90deg) translateZ(42px)' }}
+                >
+                  {isOpen && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: [0.3, 0.7, 0.3] }}
+                      transition={{ repeat: Infinity, duration: 2.5 }}
+                      className="w-8 h-8 rounded-full bg-amber-500/20 filter blur-sm"
+                    />
+                  )}
+                </div>
+
+                {/* The 3D Lid */}
+                <motion.div
+                  animate={
+                    isOpen
+                      ? { y: -88, rotateX: -65, rotateZ: 20, opacity: 0.9 }
+                      : { y: 0, rotateX: 0, rotateZ: 0, opacity: 1 }
+                  }
+                  transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+                  style={{ transformStyle: 'preserve-3d' }}
+                  className="absolute -top-3 -left-1.5 w-[124px] h-[30px]"
+                >
+                  {/* Lid Top Face */}
+                  <div
+                    className="absolute inset-0 bg-gradient-to-b from-[#312a43] to-[#1e192a] border border-amber-400/40 rounded-sm shadow-md"
+                    style={{ transform: 'translateZ(15px)' }}
+                  >
+                    {/* Cross Ribbons on Lid */}
+                    <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-4 bg-gradient-to-r from-amber-600 via-amber-300 to-amber-600 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
+                    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-4 bg-gradient-to-b from-amber-600 via-amber-300 to-amber-600 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
+
+                    {/* Golden Ribbon Bow Knot */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+                      <span className="text-xl filter drop-shadow-[0_0_6px_rgba(245,158,11,0.8)]">
+                        🎀
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            </div>
+
+            {/* Tap Open Action Prompt if not yet opened */}
+            {!isOpen && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleOpen()}
+                className="mt-4 px-6 py-2 rounded-full bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 text-neutral-950 font-sans text-xs font-semibold tracking-wider shadow-[0_4px_18px_rgba(234,179,8,0.35)] cursor-pointer hover:shadow-lg transition-all"
+              >
+                <span>Open Gift 🎁</span>
+              </motion.button>
+            )}
+          </div>
+        )}
+
+        {/* Monologue Progression */}
+        <AnimatePresence mode="wait">
+          {/* Stage 1: Inside: nothing & Opening reflection */}
+          {isOpen && giftStep === 1 && (
+            <motion.div
+              key="gift-step-1"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.6 }}
+              className="space-y-3.5 max-w-[325px] px-2"
+            >
+              <div className="inline-block px-3 py-1 rounded-full bg-neutral-900 border border-neutral-800 text-[11px] font-mono tracking-widest text-neutral-400">
+                Inside: <span className="text-neutral-200 italic">nothing.</span>
+              </div>
+
+              <p className="font-serif text-[16px] sm:text-[17.5px] text-neutral-100 leading-relaxed font-normal">
+                I spent so long wondering what I could give you.
+              </p>
+
+              <p className="font-sans text-[12.5px] sm:text-[13.5px] text-neutral-400 tracking-wider font-light leading-relaxed">
+                Flowers. Memories. Letters. Time.<br />
+                <span className="italic text-neutral-300">Maybe even myself.</span>
+              </p>
+
+              <div className="pt-2">
+                <button
+                  onClick={handleStepForward}
+                  className="px-5 py-1.5 rounded-full border border-neutral-700 bg-neutral-900/80 hover:bg-neutral-800 text-neutral-300 text-xs font-mono tracking-wider transition-all cursor-pointer inline-flex items-center gap-1.5"
+                >
+                  <span>Continue</span>
+                  <span>→</span>
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Stage 2: Freedom from expectations */}
+          {isOpen && giftStep === 2 && (
+            <motion.div
+              key="gift-step-2"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.6 }}
+              className="space-y-4 max-w-[325px] px-2"
+            >
+              <p className="font-serif text-[15.5px] sm:text-[17px] text-neutral-300 leading-relaxed font-normal">
+                But eventually I understood...
+              </p>
+
+              <p className="font-serif text-[15px] sm:text-[16px] text-neutral-200 leading-relaxed">
+                the best thing I can give you is something you've never had to ask me for.
+              </p>
+
+              <div className="p-3 rounded-xl bg-gradient-to-r from-amber-500/10 via-yellow-500/15 to-amber-500/10 border border-amber-400/30 shadow-inner">
+                <p className="font-serif text-[16.5px] sm:text-[18px] text-amber-200 font-semibold tracking-wide">
+                  Freedom from my expectations.
+                </p>
+              </div>
+
+              <div className="pt-2">
+                <button
+                  onClick={handleStepForward}
+                  className="px-5 py-1.5 rounded-full border border-neutral-700 bg-neutral-900/80 hover:bg-neutral-800 text-neutral-300 text-xs font-mono tracking-wider transition-all cursor-pointer inline-flex items-center gap-1.5"
+                >
+                  <span>Continue</span>
+                  <span>→</span>
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Stage 3: The Return Gift Statement */}
+          {isOpen && giftStep === 3 && (
+            <motion.div
+              key="gift-step-3"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.6 }}
+              className="space-y-3.5 max-w-[335px] px-2"
+            >
+              <p className="font-serif text-[16px] sm:text-[17.5px] text-neutral-100 font-medium">
+                So this is my return gift.
+              </p>
+
+              <p className="font-sans text-[13px] sm:text-[14px] text-neutral-300 leading-relaxed font-light">
+                I am returning every expectation I ever had from you.
+              </p>
+
+              <div className="space-y-1.5 py-1 text-[13px] sm:text-[14px] font-sans text-neutral-200 font-normal">
+                <p className="text-amber-200/90">Keep your freedom.</p>
+                <p className="text-amber-200/90">Keep your happiness.</p>
+                <p className="text-amber-200/90">Keep becoming whoever you want to become.</p>
+              </div>
+
+              <p className="font-serif text-[15px] sm:text-[16px] text-neutral-400 italic pt-1">
+                And I'll keep the memories.
+              </p>
+
+              <div className="pt-2">
+                <button
+                  onClick={handleStepForward}
+                  className="px-6 py-2 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 text-neutral-950 text-xs font-sans font-semibold tracking-wider transition-all shadow-md cursor-pointer hover:shadow-lg inline-flex items-center gap-1.5"
+                >
+                  <span>Raag na kore egiye chol</span>
+                  <span>→</span>
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Stage 4: Box disappeared into Stardust & "Happy Birthday, my sunflower. 🌻" */}
+          {isDissolved && (
+            <motion.div
+              key="gift-step-4"
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1.4, ease: "easeOut" }}
+              className="flex flex-col items-center justify-center space-y-6 px-3"
+            >
+              <div className="relative p-6 flex flex-col items-center gap-4">
+                {/* Soft glowing ambient circle */}
+                <div className="absolute inset-0 rounded-full bg-amber-500/10 filter blur-2xl" />
+
+                <span className="relative text-5xl sm:text-6xl filter drop-shadow-[0_0_24px_rgba(234,179,8,0.6)] animate-pulse">
+                  🌻
+                </span>
+
+                <h2 className="relative font-serif text-2xl sm:text-3xl text-neutral-50 font-semibold tracking-tight leading-snug drop-shadow-md">
+                  Happy Birthday,<br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-200">
+                    my sunflower. 🌻
+                  </span>
+                </h2>
+
+                <p className="relative font-sans text-xs sm:text-sm text-neutral-400 font-light tracking-widest uppercase">
+                  Always wishing for your happiness
+                </p>
+              </div>
+
+              {/* Button leading to final creation slide */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.2, duration: 0.7 }}
+              >
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onNext?.();
+                  }}
+                  className="px-6 py-2.5 rounded-full bg-gradient-to-r from-neutral-800 to-neutral-900 border border-neutral-700 text-neutral-200 hover:text-white hover:border-neutral-500 font-sans text-xs tracking-wider transition-all cursor-pointer shadow-lg inline-flex items-center gap-2 group"
+                >
+                  <span>The Final Piece</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-amber-400 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Bottom hint */}
+      <div className="w-full pb-1">
+        {!isOpen && (
+          <span className="text-[10px] font-mono tracking-widest text-neutral-400 uppercase animate-pulse">
+            tap open to reveal
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
 
