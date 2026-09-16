@@ -159,6 +159,10 @@ export function MemorySlide({ index }: { index: number }) {
   const memory = config.memories[index];
   const [memoryImageLoaded, setMemoryImageLoaded] = useState(false);
 
+  useEffect(() => {
+    setMemoryImageLoaded(false);
+  }, [index, memory.photo]);
+
   return (
     <div className="w-full flex flex-col items-center justify-center px-3 py-2 text-center select-none pointer-events-none">
       <motion.div
@@ -219,6 +223,10 @@ export function PhotoSlide({ index }: { index: number }) {
   const [hearts, setHearts] = useState<{ id: number; x: number; y: number }[]>([]);
   const [isPortrait, setIsPortrait] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  useEffect(() => {
+    setImageLoaded(false);
+  }, [index, photo.src]);
 
   const handlePhotoTap = (e: React.MouseEvent) => {
     e.stopPropagation();
