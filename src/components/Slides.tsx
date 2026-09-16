@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { config } from '../config';
-import { Heart, Sparkles, MapPin, Calendar, Quote, ArrowRight, Lock, PhoneCall } from 'lucide-react';
+import { Heart, Sparkles, MapPin, Calendar, Quote, ArrowRight, Lock, PhoneCall, Music, Play, Pause, Volume2, Ticket, CheckCircle2, Plane, Compass } from 'lucide-react';
 import { ImageLoader } from './ImageLoader';
 
 export function HeyYouSlide() {
@@ -1891,3 +1891,1111 @@ export function ReturnGiftSlide({
 
 
 
+// =========================================================
+// 2. SCRATCH PHOTO SLIDE (The Photo I Love Most)
+// =========================================================
+export function FlashlightSlide({
+  onUnlock,
+  onNext,
+}: {
+  onUnlock?: () => void;
+  onNext?: () => void;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [isRevealed, setIsRevealed] = useState(false);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [scratchPercent, setScratchPercent] = useState(0);
+  const lastPointRef = useRef<{ x: number; y: number } | null>(null);
+  const clearedCellsRef = useRef<Set<string>>(new Set());
+
+  // Initialize the scratch canvas overlay
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
+
+    const rect = container.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.scale(dpr, dpr);
+
+    // Draw rich misty twilight frosted scratch surface
+    const grad = ctx.createLinearGradient(0, 0, rect.width, rect.height);
+    grad.addColorStop(0, '#1c1924');
+    grad.addColorStop(0.5, '#2c253b');
+    grad.addColorStop(1, '#13111a');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, rect.width, rect.height);
+
+    // Subtle frosted particle mist texture
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+    for (let i = 0; i < rect.width; i += 14) {
+      for (let j = 0; j < rect.height; j += 14) {
+        if ((i + j) % 28 === 0) {
+          ctx.beginPath();
+          ctx.arc(i, j, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    }
+
+    // Border line inside canvas
+    ctx.strokeStyle = 'rgba(251, 191, 36, 0.25)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(10, 10, rect.width - 20, rect.height - 20);
+
+    // Center Prompt Icon & Text
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = 'bold 32px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🪄', rect.width / 2, rect.height / 2 - 24);
+
+    ctx.fillStyle = '#fef08a';
+    ctx.font = '600 15px sans-serif';
+    ctx.fillText('Scratch with your finger', rect.width / 2, rect.height / 2 + 14);
+
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    ctx.font = '12px sans-serif';
+    ctx.fillText('to reveal the hidden photo ✨', rect.width / 2, rect.height / 2 + 36);
+  }, []);
+
+  const scratchAt = (x: number, y: number) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+
+    if (lastPointRef.current) {
+      ctx.beginPath();
+      ctx.lineWidth = 48 * dpr;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.moveTo(lastPointRef.current.x * dpr, lastPointRef.current.y * dpr);
+      ctx.lineTo(x * dpr, y * dpr);
+      ctx.stroke();
+    } else {
+      ctx.beginPath();
+      ctx.arc(x * dpr, y * dpr, 24 * dpr, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    lastPointRef.current = { x, y };
+
+    // Track grid cell coverage
+    const rect = canvas.getBoundingClientRect();
+    const col = Math.floor((x / rect.width) * 16);
+    const row = Math.floor((y / rect.height) * 20);
+    clearedCellsRef.current.add(`${col}-${row}`);
+
+    const totalCells = 16 * 20; // 320
+    const pct = Math.min(100, Math.round((clearedCellsRef.current.size / (totalCells * 0.42)) * 100));
+    setScratchPercent(pct);
+
+    if (pct >= 85 && !isRevealed) {
+      setIsRevealed(true);
+      onUnlock?.();
+    }
+  };
+
+  const getCoordinates = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    };
+  };
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (isRevealed) return;
+    try {
+      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    } catch (_) {}
+    setIsDrawing(true);
+    const { x, y } = getCoordinates(e);
+    lastPointRef.current = { x, y };
+    scratchAt(x, y);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!isDrawing || isRevealed) return;
+    const { x, y } = getCoordinates(e);
+    scratchAt(x, y);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    try {
+      (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch (_) {}
+    setIsDrawing(false);
+    lastPointRef.current = null;
+  };
+
+  const handleManualReveal = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsRevealed(true);
+    setScratchPercent(100);
+    onUnlock?.();
+  };
+
+  return (
+    <div className="relative w-full h-full min-h-[580px] sm:min-h-[640px] max-w-[380px] flex flex-col justify-between items-center text-center p-4 sm:p-6 bg-black select-none pointer-events-auto">
+      {/* Top Header */}
+      <div className="w-full pt-1">
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-300 mb-2 shadow-xs"
+        >
+          <span className="text-[11px]">🪄</span>
+          <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.22em] text-amber-300 font-medium">
+            {isRevealed ? "Photo Unlocked ✨" : `Scratch to Reveal • ${scratchPercent}%`}
+          </span>
+        </motion.div>
+        <h3 className="font-serif text-lg sm:text-xl text-neutral-100 font-semibold tracking-tight">
+          {config.flashlight?.title || "The Photo I Love Most"}
+        </h3>
+        <p className="text-[11.5px] text-neutral-400 font-sans mt-0.5">
+          {isRevealed
+            ? "My absolute favourite picture of you 🌻❤️"
+            : config.flashlight?.hint || "Scratch the screen with your finger to unlock the photo 🪄✨"}
+        </p>
+      </div>
+
+      {/* The Scratch Card Container */}
+      <div
+        ref={containerRef}
+        className="relative w-full max-w-[310px] aspect-[4/5] rounded-2xl overflow-hidden border border-neutral-800 shadow-[0_20px_50px_rgba(0,0,0,0.85)] my-auto select-none"
+      >
+        {/* The Photo Layer Underneath */}
+        <div className="absolute inset-0 bg-neutral-900 flex flex-col items-center justify-between p-3.5 sm:p-4">
+          <div className="relative w-full flex-1 rounded-xl overflow-hidden bg-neutral-950 border border-white/10 shadow-inner">
+            <img
+              src={config.flashlight?.photo || "/assets/fav_pic.png"}
+              alt="The photo I love most"
+              className="w-full h-full object-cover object-center"
+            />
+          </div>
+
+          {/* Polaroid Message at bottom */}
+          <div className="w-full pt-2.5 text-center">
+            <p className="font-serif text-[12.5px] sm:text-[13.5px] text-neutral-200 leading-snug">
+              {config.flashlight?.note || "Out of every single picture of yours, this one has my entire heart. There is something so pure and breathtaking about your smile here. 🌻❤️"}
+            </p>
+          </div>
+        </div>
+
+        {/* The Scratchable Canvas Layer On Top */}
+        <canvas
+          ref={canvasRef}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          style={{
+            opacity: isRevealed ? 0 : 1,
+            pointerEvents: isRevealed ? 'none' : 'auto',
+          }}
+          className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing touch-none z-20 transition-opacity duration-700 rounded-2xl"
+        />
+
+        {/* Revealed Sparkle Burst */}
+        {isRevealed && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="absolute top-3 right-3 z-30 px-2.5 py-0.5 rounded-full bg-amber-400 text-neutral-950 text-[10px] font-sans font-bold shadow-md"
+          >
+            Unlocked ✨
+          </motion.div>
+        )}
+      </div>
+
+      {/* Bottom Action / Hint */}
+      <div className="w-full pb-2">
+        {!isRevealed ? (
+          <button
+            onClick={handleManualReveal}
+            className="text-[10px] font-mono tracking-widest text-neutral-500 hover:text-amber-300 uppercase transition-colors cursor-pointer"
+          >
+            tap here to reveal directly 🪄
+          </button>
+        ) : (
+          <motion.button
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onNext?.();
+            }}
+            className="px-6 py-2 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 text-neutral-950 font-sans text-xs font-semibold tracking-wide shadow-md hover:shadow-lg transition-all cursor-pointer inline-flex items-center gap-1.5"
+          >
+            <span>I love this photo ❤️</span>
+            <span>→</span>
+          </motion.button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// =========================================================
+// 3. BUCKET LIST SLIDE (Rectangular Boxes Aligned Left, Right, Center, Bottom)
+// =========================================================
+// =========================================================
+// 3. BUCKET LIST SLIDE (Full-Screen 4-Photo Background & 4 Promises)
+// =========================================================
+export function BucketListSlide({
+  onUnlock,
+  onNext,
+}: {
+  onUnlock?: () => void;
+  onNext?: () => void;
+}) {
+  const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
+  const [justStamped, setJustStamped] = useState<string | null>(null);
+
+  // The 4 user-specified promises mapped to the 4 background photos
+  const promises = [
+    {
+      id: "movie",
+      place: 'Watch "Me Before You" Together',
+      plan: 'Tucked under warm blankets with hot popcorn, holding hands and crying through every scene.',
+      icon: "🎬",
+      tag: "MOVIE NIGHT",
+      vibe: "Warm blankets & happy tears",
+      image: "/assets/movie.png",
+      align: "self-start ml-1 sm:ml-2",
+      width: "w-[88%] sm:w-[84%]",
+      rotate: "-rotate-1.5 hover:rotate-0",
+      accent: "from-amber-500/20 to-rose-500/20",
+    },
+    {
+      id: "puja",
+      place: "A Durga Puja Night Out With You",
+      plan: "Pandal hopping till 4 AM, eating random street food, and endless gossiping in a rainy puja night.",
+      icon: "🪔",
+      tag: "PUJA NIGHT OUT",
+      vibe: "Rainy streets & endless gossiping",
+      image: "/assets/puja.png",
+      align: "self-end mr-1 sm:mr-2",
+      width: "w-[89%] sm:w-[85%]",
+      rotate: "rotate-2 hover:rotate-0",
+      accent: "from-rose-500/20 to-orange-500/20",
+    },
+    {
+      id: "paris",
+      place: "Paris Night Under Eiffel Tower",
+      plan: "Standing together under the midnight sparkle of the Eiffel Tower, wrapped in your warmth.",
+      icon: "🗼",
+      tag: "PARISIAN NIGHT",
+      vibe: "Midnight sparkle with you",
+      image: "/assets/paris_night.png",
+      align: "self-start ml-3 sm:ml-4",
+      width: "w-[87%] sm:w-[84%]",
+      rotate: "-rotate-1 hover:rotate-0",
+      accent: "from-blue-500/20 to-rose-500/20",
+    },
+    {
+      id: "edinberg",
+      place: "Visiting Edinburgh Together",
+      plan: "Walking the misty cobbled Royal Mile in cozy trench coats, exploring ancient Scottish castles hand in hand.",
+      icon: "🏰",
+      tag: "SCOTTISH HIGHLANDS",
+      vibe: "Cobbled streets & castle dreams",
+      image: "/assets/edinberg.png",
+      align: "self-end mr-1 sm:mr-2",
+      width: "w-[90%] sm:w-[86%]",
+      rotate: "rotate-1.5 hover:rotate-0",
+      accent: "from-purple-500/20 to-indigo-500/20",
+    },
+  ];
+
+  const selectedCount = Object.values(selectedItems).filter(Boolean).length;
+  const isAllPromised = selectedCount === promises.length;
+
+  const toggleItem = (id: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setJustStamped(id);
+    setTimeout(() => setJustStamped(null), 700);
+
+    setSelectedItems(prev => {
+      const next = { ...prev, [id]: !prev[id] };
+      const count = Object.values(next).filter(Boolean).length;
+      if (count === promises.length) {
+        onUnlock?.();
+      }
+      return next;
+    });
+  };
+
+  const handlePromiseAll = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const all: Record<string, boolean> = {};
+    promises.forEach(item => {
+      all[item.id] = true;
+    });
+    setSelectedItems(all);
+    setJustStamped('all');
+    setTimeout(() => setJustStamped(null), 700);
+    onUnlock?.();
+  };
+
+  return (
+    <div className="relative w-full h-full flex flex-col justify-between items-center text-center px-3 pt-2 pb-16 select-none pointer-events-auto overflow-hidden bg-gradient-to-b from-[#0a0715] via-[#120b22] to-[#07040d]">
+      {/* Subtle Ambient Twinkling Stardust Background */}
+      <div className="absolute inset-0 pointer-events-none opacity-30">
+        {[...Array(18)].map((_, i) => (
+          <div
+            key={i}
+            style={{
+              left: `${(i * 19) % 94}%`,
+              top: `${(i * 29) % 90}%`,
+              animationDelay: `${(i * 0.4) % 3}s`,
+            }}
+            className="absolute w-1 h-1 bg-rose-200/80 rounded-full animate-ping"
+          />
+        ))}
+      </div>
+
+      {/* Ambient Romantic Glow */}
+      <div className="absolute -top-16 -left-16 w-56 h-56 bg-rose-500/15 rounded-full filter blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-16 -right-16 w-56 h-56 bg-amber-500/10 rounded-full filter blur-3xl pointer-events-none" />
+
+      {/* Top Header */}
+      <div className="relative z-10 w-full pt-0.5 space-y-0.5 shrink-0">
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-black/60 border border-white/20 text-rose-300 shadow-xs backdrop-blur-md"
+        >
+          <span className="text-[10px] animate-pulse">💖</span>
+          <span className="font-mono text-[8.5px] sm:text-[9.5px] uppercase tracking-[0.24em] font-semibold text-rose-200">
+            4 SACRED PROMISES • US FOREVER
+          </span>
+          <Sparkles className="w-3 h-3 text-amber-400" />
+        </motion.div>
+
+        <h2 className="font-serif text-2xl sm:text-[26px] font-bold text-white tracking-tight drop-shadow-md">
+          Places I Wish to Take You 🗺️
+        </h2>
+        <p className="text-[11px] sm:text-[11.5px] text-rose-200/85 font-sans">
+          Tap each box to promise me these 4 dreams. 🌻
+        </p>
+      </div>
+
+      {/* 4 Organically Aligned Rectangular Boxes (Fits full screen, ZERO inner scroll) */}
+      <div className="relative z-10 w-full max-w-[390px] flex-1 min-h-0 flex flex-col justify-around py-1 my-auto">
+        {promises.map((item, idx) => {
+          const isSelected = !!selectedItems[item.id];
+          const wasJustStamped = justStamped === item.id || justStamped === 'all';
+
+          return (
+            <motion.div
+              key={item.id}
+              whileTap={{ scale: 0.97 }}
+              onClick={(e) => toggleItem(item.id, e)}
+              className={`relative ${item.align} ${item.width} ${item.rotate} rounded-2xl border transition-all duration-300 cursor-pointer text-left p-2.5 sm:p-3 shadow-lg group ${
+                isSelected
+                  ? 'border-rose-400/90 shadow-[0_0_24px_rgba(244,63,94,0.45)] ring-1 ring-rose-400/60'
+                  : 'border-white/20 hover:border-white/40 shadow-md'
+              }`}
+            >
+              {/* Background Image Behind the Promise with Light Transparent Layer */}
+              <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+                <img
+                  src={item.image}
+                  alt={item.place}
+                  className={`w-full h-full object-cover transition-transform duration-700 ${
+                    isSelected ? 'scale-105' : 'group-hover:scale-105'
+                  }`}
+                />
+                {/* Light transparent film - slightly darkened for balanced contrast */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/40 to-black/30" />
+                {isSelected && (
+                  <div className="absolute inset-0 bg-rose-500/10 pointer-events-none" />
+                )}
+              </div>
+
+              {/* Washi-Tape Accent on Corner */}
+              <div
+                className={`absolute -top-1.5 ${
+                  idx % 2 === 0 ? 'left-4 rotate-[-3deg]' : 'right-4 rotate-[3deg]'
+                } w-8 h-2.5 bg-amber-200/80 border border-amber-300/70 rounded-xs pointer-events-none z-20 shadow-xs`}
+              />
+
+              {/* Foreground Content */}
+              <div className="relative z-10 space-y-1">
+                {/* Top Tag & Route */}
+                <div className="flex items-center justify-between text-[8.5px] font-mono tracking-wider uppercase">
+                  <span className="font-bold text-rose-200 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center gap-1 shadow-xs">
+                    <span>{item.icon}</span>
+                    <span>{item.tag}</span>
+                  </span>
+                  <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-black/60 text-white/95 border border-white/20 font-sans backdrop-blur-md shadow-xs">
+                    {item.vibe}
+                  </span>
+                </div>
+
+                {/* Title */}
+                <h4 className="font-serif text-[13.5px] sm:text-[14.5px] font-bold text-white leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
+                  {item.place}
+                </h4>
+
+                {/* Plan Description with subtle glassmorphic card for 100% legibility */}
+                <p className="font-sans text-[10.5px] sm:text-[11px] text-white/95 font-normal leading-snug line-clamp-2 drop-shadow-[0_1.5px_3px_rgba(0,0,0,0.9)] bg-black/35 backdrop-blur-[2px] px-2 py-1 rounded-lg border border-white/10">
+                  {item.plan}
+                </p>
+
+                {/* Bottom Row / Interactive Button */}
+                <div className="flex items-center justify-between gap-1.5 pt-1 border-t border-white/20">
+                  <span className="text-[8.5px] font-mono text-white/95 font-semibold uppercase tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] px-1.5 py-0.5 rounded bg-black/45 backdrop-blur-xs">
+                    PROMISE {idx + 1} OF 4
+                  </span>
+
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={(e) => toggleItem(item.id, e)}
+                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-sans font-bold transition-all cursor-pointer inline-flex items-center gap-1 shadow-md ${
+                      isSelected
+                        ? 'bg-gradient-to-r from-rose-500 to-pink-500 text-white ring-1 ring-white/50'
+                        : 'bg-black/70 hover:bg-black/85 text-rose-200 border border-rose-300/40 backdrop-blur-md'
+                    }`}
+                  >
+                    <Heart className={`w-2.5 h-2.5 ${isSelected ? 'fill-white text-white' : 'text-rose-400'}`} />
+                    <span>{isSelected ? 'Promised 💖' : 'Promise'}</span>
+                  </motion.button>
+                </div>
+              </div>
+
+              {/* Stamped Wax / Rubber Passport Seal Overlay */}
+              {isSelected && (
+                <motion.div
+                  animate={
+                    wasJustStamped
+                      ? { scale: [0.5, 1.25, 1], rotate: [-24, 6, -12] }
+                      : { scale: 1, rotate: -12 }
+                  }
+                  transition={{ duration: 0.4 }}
+                  className="absolute right-2 -top-1.5 w-10 h-10 rounded-full border-2 border-rose-500 bg-rose-950/95 flex flex-col items-center justify-center p-0.5 pointer-events-none shadow-md text-rose-300 font-mono font-bold leading-none select-none z-20"
+                >
+                  <span className="text-[5.5px] uppercase tracking-tighter">SEALED</span>
+                  <Heart className="w-2.5 h-2.5 fill-rose-500 text-rose-500 my-0.2" />
+                  <span className="text-[5px] tracking-tight">FOREVER</span>
+                </motion.div>
+              )}
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Bottom HUD Progress & Seal All Action */}
+      <div className="relative z-10 w-full max-w-[360px] bg-black/65 backdrop-blur-md rounded-xl p-2 border border-white/20 shadow-md space-y-1">
+        <div className="flex items-center justify-between text-[10.5px] font-sans font-semibold">
+          <div className="flex items-center gap-1.5 text-neutral-300">
+            {promises.map(p => (
+              <span
+                key={`dot-${p.id}`}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  selectedItems[p.id]
+                    ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,1)] scale-110'
+                    : 'bg-neutral-600'
+                }`}
+              />
+            ))}
+            <span className="ml-1 text-[10px]">
+              {selectedCount} of 4 Promises Sealed
+            </span>
+          </div>
+
+          {!isAllPromised ? (
+            <motion.button
+              whileTap={{ scale: 0.92 }}
+              onClick={handlePromiseAll}
+              className="text-[9.5px] font-sans font-bold text-rose-300 hover:text-white bg-white/10 hover:bg-white/20 px-2 py-0.5 rounded-full border border-white/20 transition-colors cursor-pointer inline-flex items-center gap-0.5"
+            >
+              <span>Seal All</span>
+              <span>💌</span>
+            </motion.button>
+          ) : (
+            <span className="text-rose-400 font-bold text-[10px] animate-pulse">
+              All 4 Sealed! 💍
+            </span>
+          )}
+        </div>
+
+        {isAllPromised && (
+          <motion.p
+            initial={{ opacity: 0, y: 3 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-[9.5px] font-serif text-amber-200 font-normal italic pt-0.5"
+          >
+            "I promise you every single one of these lifetimes." 💍❤️
+          </motion.p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// =========================================================
+// 4. CONSTELLATION SLIDE (Heart Constellation & Quote)
+// =========================================================
+export function ConstellationSlide({
+  onUnlock,
+  onNext,
+}: {
+  onUnlock?: () => void;
+  onNext?: () => void;
+}) {
+  // Star 0 (top cleft) starts as the origin anchor!
+  const [connectedCount, setConnectedCount] = useState<number>(1);
+  const [isFormed, setIsFormed] = useState(false);
+  const [lastTrait, setLastTrait] = useState<string>("Your Heart");
+  const [justTappedIdx, setJustTappedIdx] = useState<number | null>(null);
+  const [wrongTapIdx, setWrongTapIdx] = useState<number | null>(null);
+
+  // 12 stars placed symmetrically along the iconic heart curve
+  // Tracing sequence: 0 (center top cleft) -> 1, 2, 3, 4, 5 (down the left side!) -> 6 (bottom tip) -> 7, 8, 9, 10, 11 (up the right side!) -> closes to 0!
+  const stars = [
+    { id: 0, x: 50, y: 32, label: "Your Heart", icon: "❤️" },
+    { id: 1, x: 36, y: 18, label: "Your Laugh", icon: "✨" },
+    { id: 2, x: 22, y: 22, label: "Your Innocence", icon: "🌸" },
+    { id: 3, x: 12, y: 38, label: "Your Ambition", icon: "⭐" },
+    { id: 4, x: 16, y: 56, label: "Your Kindness", icon: "🤍" },
+    { id: 5, x: 32, y: 74, label: "Your Warmth", icon: "☀️" },
+    { id: 6, x: 50, y: 91, label: "Our Story", icon: "📖" },
+    { id: 7, x: 68, y: 74, label: "Your Trust", icon: "🗝️" },
+    { id: 8, x: 84, y: 56, label: "Your Courage", icon: "🌟" },
+    { id: 9, x: 88, y: 38, label: "Your Eyes", icon: "👁️" },
+    { id: 10, x: 78, y: 22, label: "Your Silence", icon: "🌙" },
+    { id: 11, x: 64, y: 18, label: "Your Smile", icon: "🌻" },
+  ];
+
+  // The active star that MUST be tapped next (strictly sequential)
+  // When connectedCount = 1, active is Star 1 (the first dot on the LEFT)
+  const activeStarIndex = connectedCount < stars.length ? connectedCount : 0;
+
+  const handleStarTap = (starIdx: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isFormed) return;
+
+    // Strict guide: ONLY the active target star advances the path!
+    // Prevents tap on left jumping to right, and enforces dot-by-dot tracing.
+    if (starIdx !== activeStarIndex) {
+      setWrongTapIdx(starIdx);
+      setTimeout(() => setWrongTapIdx(null), 400);
+      return;
+    }
+
+    setJustTappedIdx(starIdx);
+    setTimeout(() => setJustTappedIdx(null), 500);
+
+    const nextCount = connectedCount + 1;
+    const tappedStar = stars[starIdx];
+    setLastTrait(tappedStar.label);
+    setConnectedCount(nextCount);
+
+    // When 12 stars are connected, complete and lock in the heart!
+    if (nextCount >= 12) {
+      setIsFormed(true);
+      onUnlock?.();
+    }
+  };
+
+  const handleReset = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setConnectedCount(1);
+    setIsFormed(false);
+    setLastTrait("Your Heart");
+  };
+
+  // Build the list of active lines connecting star to star
+  const linesToRender: Array<{ x1: number; y1: number; x2: number; y2: number; key: string }> = [];
+  for (let i = 0; i < connectedCount - 1; i++) {
+    if (i < stars.length - 1) {
+      linesToRender.push({
+        x1: stars[i].x,
+        y1: stars[i].y,
+        x2: stars[i + 1].x,
+        y2: stars[i + 1].y,
+        key: `line-${i}-${i + 1}`,
+      });
+    }
+  }
+
+  // GUARANTEED CLOSURE: When the 12th star is tapped, connect the final line from Star 11 back to Star 0!
+  if (connectedCount >= 12 || isFormed) {
+    linesToRender.push({
+      x1: stars[11].x,
+      y1: stars[11].y,
+      x2: stars[0].x,
+      y2: stars[0].y,
+      key: `closing-line-11-0`,
+    });
+  }
+
+  return (
+    <div
+      className="relative w-full h-full max-w-[380px] flex flex-col justify-between items-center text-center px-4 pt-3 pb-16 bg-gradient-to-b from-[#050713] via-[#090d21] to-[#04050a] select-none pointer-events-auto overflow-hidden"
+    >
+      {/* Background Twinkling Dust */}
+      <div className="absolute inset-0 pointer-events-none opacity-40">
+        {[...Array(22)].map((_, i) => (
+          <div
+            key={i}
+            style={{
+              left: `${(i * 17) % 94}%`,
+              top: `${(i * 23) % 92}%`,
+              animationDelay: `${(i * 0.35) % 3}s`,
+            }}
+            className="absolute w-1 h-1 bg-white rounded-full animate-ping"
+          />
+        ))}
+      </div>
+
+      {/* Top Badge */}
+      <div className="w-full pt-1 z-10">
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-900/90 border border-neutral-800 text-neutral-300 shadow-xs mb-1"
+        >
+          <span className="text-[11px] animate-pulse">💖</span>
+          <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.24em] text-rose-300 font-medium">
+            {config.constellation?.badge || "A CELESTIAL PROMISE"}
+          </span>
+        </motion.div>
+      </div>
+
+      {/* Center Interactive Constellation Sky (Heart Shape) */}
+      <div className="relative w-full max-w-[295px] aspect-square my-auto flex items-center justify-center">
+        {/* SVG Drawing Lines forming the heart */}
+        <svg
+          viewBox="0 0 100 100"
+          className="absolute inset-0 w-full h-full z-10 pointer-events-none filter drop-shadow-[0_0_10px_rgba(244,63,94,0.7)]"
+        >
+          {/* Faint stardust heart guideline path */}
+          <path
+            d="M 50,32 C 36,18 22,22 12,38 C 16,56 32,74 50,91 C 68,74 84,56 88,38 C 78,22 64,18 50,32 Z"
+            fill="none"
+            stroke="rgba(255, 255, 255, 0.12)"
+            strokeWidth="0.8"
+            strokeDasharray="2 3"
+          />
+
+          {/* Progressively Drawn Neon Gradient Lines */}
+          {linesToRender.map(line => (
+            <motion.line
+              key={line.key}
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              x1={line.x1}
+              y1={line.y1}
+              x2={line.x2}
+              y2={line.y2}
+              stroke="url(#heartNeonGrad)"
+              strokeWidth={isFormed ? "2.8" : "2.4"}
+              strokeLinecap="round"
+            />
+          ))}
+
+          {/* Seamless closed glowing heart path once formed (zero gaps guaranteed) */}
+          {isFormed && (
+            <motion.path
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6 }}
+              d="M 50,32 L 36,18 L 22,22 L 12,38 L 16,56 L 32,74 L 50,91 L 68,74 L 84,56 L 88,38 L 78,22 L 64,18 Z"
+              fill="url(#heartInteriorBlush)"
+              stroke="url(#heartNeonGrad)"
+              strokeWidth="3"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+            />
+          )}
+
+          <defs>
+            <linearGradient id="heartNeonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#fb7185" />
+              <stop offset="50%" stopColor="#f43f5e" />
+              <stop offset="100%" stopColor="#fbbf24" />
+            </linearGradient>
+            <radialGradient id="heartInteriorBlush" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="rgba(244, 63, 94, 0.18)" />
+              <stop offset="80%" stopColor="rgba(244, 63, 94, 0.04)" />
+              <stop offset="100%" stopColor="rgba(244, 63, 94, 0)" />
+            </radialGradient>
+          </defs>
+        </svg>
+
+        {/* Stars Nodes along the heart perimeter */}
+        {stars.map((star, index) => {
+          const isConnected = index < connectedCount || isFormed;
+          const isCurrentTarget = index === activeStarIndex && !isFormed;
+          const wasJustClicked = justTappedIdx === index;
+          const isWrongTap = wrongTapIdx === index;
+
+          return (
+            <div
+              key={star.id}
+              style={{ left: `${star.x}%`, top: `${star.y}%` }}
+              onClick={(e) => handleStarTap(index, e)}
+              className="absolute -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer p-4 group"
+              title={`Star ${index + 1}: ${star.label}`}
+            >
+              {/* Target Star Halo Beacon Ring */}
+              {isCurrentTarget && (
+                <span className="absolute inset-1 rounded-full bg-rose-500/40 animate-ping pointer-events-none" />
+              )}
+
+              {/* Just-Tapped Shockwave Burst */}
+              {wasJustClicked && (
+                <motion.span
+                  initial={{ scale: 0.8, opacity: 1 }}
+                  animate={{ scale: 2.4, opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="absolute inset-0 rounded-full border border-amber-300 bg-amber-400/30 pointer-events-none"
+                />
+              )}
+
+              {/* Star Core Orb */}
+              <motion.div
+                animate={
+                  isWrongTap
+                    ? { x: [-3, 3, -2, 2, 0] }
+                    : isConnected
+                    ? { scale: [1, 1.25, 1] }
+                    : isCurrentTarget
+                    ? { scale: [1, 1.35, 1] }
+                    : { scale: [0.9, 1.05, 0.9] }
+                }
+                transition={{ repeat: isConnected && !isWrongTap ? 0 : isCurrentTarget ? Infinity : 0, duration: isWrongTap ? 0.3 : 1.6 }}
+                className={`w-4 h-4 rounded-full flex items-center justify-center border transition-all ${
+                  isConnected
+                    ? 'bg-gradient-to-tr from-rose-500 to-amber-300 border-amber-200 shadow-[0_0_16px_rgba(244,63,94,0.95)]'
+                    : isCurrentTarget
+                    ? 'bg-amber-300 border-white shadow-[0_0_16px_rgba(251,191,36,1)] ring-2 ring-rose-400'
+                    : 'bg-neutral-800 border-neutral-600 group-hover:border-rose-400'
+                }`}
+              >
+                <div
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    isConnected ? 'bg-white' : isCurrentTarget ? 'bg-amber-950 animate-pulse' : 'bg-neutral-400'
+                  }`}
+                />
+              </motion.div>
+
+              {/* Floating "Tap ✨" Indicator on Active Target Star */}
+              {isCurrentTarget && (
+                <motion.div
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: [-2, -6, -2] }}
+                  transition={{ repeat: Infinity, duration: 1.2 }}
+                  className="absolute left-1/2 -top-6 -translate-x-1/2 whitespace-nowrap px-2 py-0.5 rounded-full bg-gradient-to-r from-rose-500 to-amber-500 text-white text-[8.5px] font-sans font-bold shadow-md pointer-events-none z-30"
+                >
+                  Tap ✨
+                </motion.div>
+              )}
+            </div>
+          );
+        })}
+
+        {/* Center Glowing Intertwined Heart & Sunflower (Blooms on formation) */}
+        <AnimatePresence>
+          {isFormed && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.3 }}
+              animate={{ opacity: 1, scale: [1, 1.06, 1] }}
+              transition={{
+                opacity: { duration: 0.8 },
+                scale: { repeat: Infinity, duration: 2.5, ease: "easeInOut" }
+              }}
+              className="relative z-30 flex flex-col items-center justify-center p-3"
+            >
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-rose-500/25 via-amber-500/25 to-rose-500/25 filter blur-xl animate-pulse" />
+              <div className="relative flex items-center justify-center gap-1.5 text-4xl sm:text-5xl filter drop-shadow-[0_0_20px_rgba(244,63,94,0.85)]">
+                <span>🌻</span>
+                <span className="text-rose-500 animate-pulse">❤️</span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Sentence Reveal & Step-by-Step Tapping HUD */}
+      <div className="w-full z-10 space-y-2 pb-1">
+        <AnimatePresence mode="wait">
+          {isFormed ? (
+            <motion.div
+              key="revealed-quote"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="space-y-1.5 max-w-[320px] mx-auto px-1"
+            >
+              <p className="font-serif text-[12.5px] sm:text-[14px] text-amber-100 leading-relaxed font-normal">
+                "{config.constellation?.quote1 || "If I could give you one thing in life, I would give you the ability to see yourself through my eyes."}"
+              </p>
+              <p className="font-serif text-[11.5px] sm:text-[13px] text-rose-200/90 leading-relaxed italic">
+                "{config.constellation?.quote2 || "Only then would you realize how truly special you are to me."}"
+              </p>
+              <div className="pt-1 flex items-center justify-center gap-3">
+                <span className="inline-block text-[10px] font-sans uppercase tracking-widest text-amber-300/90">
+                  Always my sunflower 🌻🤍
+                </span>
+                <button
+                  onClick={handleReset}
+                  className="text-[9.5px] font-mono text-rose-300 hover:text-white uppercase tracking-wider underline cursor-pointer px-2 py-0.5 rounded bg-rose-950/40 border border-rose-800/60"
+                >
+                  Trace Again ↺
+                </button>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="tap-prompt"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="space-y-2 max-w-[320px] mx-auto"
+            >
+              {/* Progress Tracker with Micro Star Pips */}
+              <div className="flex items-center justify-center gap-1.5">
+                {stars.map((_, i) => (
+                  <div
+                    key={`pip-${i}`}
+                    className={`w-1.5 h-1.5 rounded-full transition-all ${
+                      i < connectedCount
+                        ? 'bg-rose-400 scale-110 shadow-[0_0_6px_rgba(244,63,94,0.9)]'
+                        : i === activeStarIndex
+                        ? 'bg-amber-300 animate-ping'
+                        : 'bg-neutral-700'
+                    }`}
+                  />
+                ))}
+              </div>
+
+              {/* Status Message */}
+              <div>
+                <p className="font-serif text-xs sm:text-[13px] text-neutral-200">
+                  {connectedCount === 1
+                    ? 'Tap the glowing star on the left to begin tracing (1 / 12) ✨'
+                    : `Star ${connectedCount} of ${stars.length}: "${lastTrait}" ✨`}
+                </p>
+                <p className="text-[10px] font-mono tracking-widest text-rose-300/80 uppercase mt-0.5">
+                  Tap all {stars.length} stars to reveal our constellation 💖
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+// =========================================================
+// 5. VOICE NOTE SLIDE (Audio Birthday Wish)
+// =========================================================
+export function VoiceNoteSlide({
+  onUnlock,
+  onNext,
+  onAudioPlay,
+  onAudioPause,
+}: {
+  onUnlock?: () => void;
+  onNext?: () => void;
+  onAudioPlay?: () => void;
+  onAudioPause?: () => void;
+}) {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState("0:00");
+  const [duration, setDuration] = useState("0:45");
+  const [hasPlayed, setHasPlayed] = useState(false);
+
+  useEffect(() => {
+    let interval: any;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        const audio = audioRef.current;
+        if (audio && !isNaN(audio.duration) && audio.duration > 0) {
+          const pct = (audio.currentTime / audio.duration) * 100;
+          setProgress(pct);
+          const mins = Math.floor(audio.currentTime / 60);
+          const secs = Math.floor(audio.currentTime % 60);
+          setCurrentTime(`${mins}:${secs < 10 ? '0' : ''}${secs}`);
+        } else {
+          setProgress(prev => {
+            if (prev >= 100) {
+              setIsPlaying(false);
+              onAudioPause?.();
+              return 100;
+            }
+            return prev + 2;
+          });
+        }
+      }, 500);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, onAudioPause]);
+
+  const togglePlay = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const audio = audioRef.current;
+    if (!isPlaying) {
+      onAudioPlay?.();
+      setIsPlaying(true);
+      setHasPlayed(true);
+      onUnlock?.();
+      if (audio) {
+        audio.play().catch(() => { });
+      }
+    } else {
+      setIsPlaying(false);
+      onAudioPause?.();
+      if (audio) {
+        audio.pause();
+      }
+    }
+  };
+
+  const handleEnded = () => {
+    setIsPlaying(false);
+    onAudioPause?.();
+    setProgress(100);
+    onUnlock?.();
+  };
+
+  const waveformBars = [
+    30, 45, 60, 80, 50, 90, 75, 40, 65, 85, 95, 70, 55, 80, 65, 90, 45, 60, 75, 85, 50, 40
+  ];
+
+  return (
+    <div className="w-full max-w-[340px] flex flex-col items-center text-center px-2 py-3 select-none pointer-events-auto">
+      {/* Top Pill */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-rose-50 border border-rose-200/80 shadow-xs mb-3 backdrop-blur-md"
+      >
+        <span className="text-[11px] animate-pulse">🎙️</span>
+        <span className="text-[9.5px] font-sans tracking-[0.2em] uppercase font-bold text-rose-700">
+          Personal Audio Note • For Rikta
+        </span>
+      </motion.div>
+
+      {/* Headline */}
+      <h2 className="font-serif text-2xl sm:text-3xl font-semibold text-gray-800 tracking-tight mb-1">
+        Listen closely... 🎧
+      </h2>
+      <p className="text-xs text-gray-600 font-sans max-w-[270px] mb-4">
+        Because some birthday wishes are meant to be heard in my own voice.
+      </p>
+
+      {/* Hidden Audio Element */}
+      <audio
+        ref={audioRef}
+        src={config.voiceNote?.audioSrc || "/assets/voice_note.mp3"}
+        preload="metadata"
+        onEnded={handleEnded}
+        onLoadedMetadata={() => {
+          if (audioRef.current && !isNaN(audioRef.current.duration)) {
+            const mins = Math.floor(audioRef.current.duration / 60);
+            const secs = Math.floor(audioRef.current.duration % 60);
+            setDuration(`${mins}:${secs < 10 ? '0' : ''}${secs}`);
+          }
+        }}
+      />
+
+      {/* Voice Note Messenger Bubble Card */}
+      <motion.div
+        whileHover={{ scale: 1.01 }}
+        className="w-full bg-white/95 backdrop-blur-md rounded-2xl p-4 border border-rose-200/90 shadow-[0_10px_30px_rgba(244,63,94,0.12)] space-y-3"
+      >
+        <div className="flex items-center gap-3">
+          {/* Play / Pause Circular Button */}
+          <motion.button
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.92 }}
+            onClick={togglePlay}
+            className="w-12 h-12 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 text-white shadow-md flex items-center justify-center cursor-pointer flex-shrink-0"
+            title={isPlaying ? "Pause voice note" : "Play voice note"}
+          >
+            {isPlaying ? (
+              <Pause className="w-5 h-5 fill-current" />
+            ) : (
+              <Play className="w-5 h-5 fill-current ml-0.5" />
+            )}
+          </motion.button>
+
+          {/* Waveform Visualization Bars */}
+          <div className="flex-1 flex flex-col justify-center gap-1.5 min-w-0">
+            <div className="flex items-center justify-between gap-1 h-8 px-1">
+              {waveformBars.map((height, idx) => {
+                const barProgress = (idx / waveformBars.length) * 100;
+                const isPassed = progress >= barProgress;
+                return (
+                  <motion.span
+                    key={idx}
+                    animate={isPlaying ? {
+                      scaleY: [1, 1.35, 0.7, 1],
+                    } : { scaleY: 1 }}
+                    transition={isPlaying ? {
+                      repeat: Infinity,
+                      duration: 0.6 + (idx % 4) * 0.15,
+                      ease: "easeInOut"
+                    } : { duration: 0.2 }}
+                    style={{ height: `${height}%` }}
+                    className={`w-1 rounded-full transition-colors ${isPassed ? 'bg-rose-500' : 'bg-gray-200'
+                      }`}
+                  />
+                );
+              })}
+            </div>
+
+            {/* Timestamps */}
+            <div className="flex items-center justify-between text-[10px] font-mono text-gray-500 px-1">
+              <span>{currentTime}</span>
+              <span>{duration}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Caption beneath bubble */}
+        <div className="pt-1 border-t border-rose-100/70 flex items-center justify-between text-[11px] font-sans text-gray-500">
+          <span className="flex items-center gap-1">
+            <span>🌻</span>
+            <span>{config.voiceNote?.title || "A Voice Note From Rajdeep"}</span>
+          </span>
+          <span className="text-rose-500 font-medium">
+            {isPlaying ? "Playing... ❤️" : hasPlayed ? "Listened ✨" : "Tap play"}
+          </span>
+        </div>
+      </motion.div>
+
+      {/* Heartfelt Note Below */}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        className="mt-4 font-serif text-[13px] text-gray-600 italic max-w-[280px]"
+      >
+        "I wanted you to hear it directly from me, just in case you ever doubt how deeply you are loved." 🌻🤍
+      </motion.p>
+    </div>
+  );
+}

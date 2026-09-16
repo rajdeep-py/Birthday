@@ -24,6 +24,75 @@ export const config = {
     "chupp"
   ],
 
+  flashlight: {
+    photo: "/assets/fav_pic.png",
+    title: "The Photo I Love Most",
+    hint: "Scratch the screen with your finger to unlock the photo 🪄✨",
+    note: "Out of every single picture of yours, this one has my entire heart. There is something so pure, peaceful, and breathtaking about your smile here—it's my absolute favorite view in the whole universe. 🌻❤️"
+  },
+
+  bucketList: [
+    {
+      id: "movie",
+      place: 'Watch "Me Before You" Together',
+      plan: 'Tucked under warm blankets with hot popcorn, holding hands and crying through every scene.',
+      icon: "🎬",
+      route: "COUCH ➔ FOREVER",
+      category: "cozy",
+      tag: "MOVIE NIGHT",
+      vibe: "Warm blankets & happy tears",
+      image: "/assets/movie.png"
+    },
+    {
+      id: "puja",
+      place: "A Durga Puja Night Out With You",
+      plan: "Pandal hopping till 4 AM, eating random street food, and endless gossiping under one umbrella in a rainy puja night.",
+      icon: "🪔",
+      route: "NORTH ➔ SOUTH KOLKATA",
+      category: "city",
+      tag: "PUJA NIGHT OUT",
+      vibe: "Rainy streets & endless gossiping",
+      image: "/assets/puja.png"
+    },
+    {
+      id: "paris",
+      place: "Paris Night Under Eiffel Tower",
+      plan: "Standing together under the midnight sparkle of the Eiffel Tower, wrapped in your warmth as the world fades away.",
+      icon: "🗼",
+      route: "CCU ➔ PARIS [CDG]",
+      category: "dream",
+      tag: "PARISIAN NIGHT",
+      vibe: "Midnight sparkle with you",
+      image: "/assets/paris_night.png"
+    },
+    {
+      id: "edinberg",
+      place: "Visiting Edinburgh Together",
+      plan: "Walking the misty cobbled Royal Mile in cozy trench coats, exploring ancient Scottish castles hand in hand.",
+      icon: "🏰",
+      route: "PARIS ➔ EDINBURGH [EDI]",
+      category: "dream",
+      tag: "SCOTTISH HIGHLANDS",
+      vibe: "Cobbled streets & castle dreams",
+      image: "/assets/edinberg.png"
+    }
+  ],
+
+  constellation: {
+    badge: "A CELESTIAL PROMISE",
+    quote1: "If I could give you one thing in life, I would give you the ability to see yourself through my eyes.",
+    quote2: "Only then would you realize how truly special you are to me.",
+    symbol: "🌻❤️"
+  },
+
+  voiceNote: {
+    title: "A Voice Note From yours truly, hehe",
+    date: "Recorded for your birthday 🎙️",
+    duration: "3:33",
+    audioSrc: "/assets/bday_wish.mp3",
+    caption: "Just my voice wishing my favorite person the happiest birthday."
+  },
+
   riddles: [
     {
       question: "What makes you feel truly loved by someone?",

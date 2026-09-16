@@ -1,13 +1,27 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { config } from '../config';
-import { TextSlide, RiddleSlide, MemorySlide, PhotoSlide, NoteSlide, HugSlide, SituationalSlide, PromiseSlide, CreationSlide } from './Slides';
+import {
+  TextSlide,
+  RiddleSlide,
+  MemorySlide,
+  PhotoSlide,
+  NoteSlide,
+  HugSlide,
+  SituationalSlide,
+  PromiseSlide,
+  CreationSlide,
+  FlashlightSlide,
+  BucketListSlide,
+  ConstellationSlide,
+  VoiceNoteSlide,
+} from './Slides';
 import { CatSlideBackground, CatTransitionScamper } from './CatBackground';
 import { ChevronLeft, ArrowRight, Music, VolumeX } from 'lucide-react';
 
 type SlideDef = {
   id: string;
-  type: 'text' | 'riddle' | 'memory' | 'photo' | 'note' | 'hug' | 'situation' | 'promise' | 'creation';
+  type: 'text' | 'riddle' | 'memory' | 'photo' | 'note' | 'hug' | 'situation' | 'promise' | 'creation' | 'flashlight' | 'bucket-list' | 'constellation' | 'voice-note';
   content?: string;
   align?: 'center' | 'left';
   heading?: boolean;
@@ -151,6 +165,11 @@ export default function StoryDeck() {
     });
 
     deck.push({
+      id: 'flashlight-photo',
+      type: 'flashlight',
+    });
+
+    deck.push({
       id: 'photo-title',
       type: 'text',
       content: "Pieces of Us 📸",
@@ -176,6 +195,11 @@ export default function StoryDeck() {
       type: 'text',
       content: "Whether you're quiet, giggling, petting cats, or stealing my heart in a saree...",
       subtext: "I felt for every single version of you. Every single day. ❤️"
+    });
+
+    deck.push({
+      id: 'constellation-quote',
+      type: 'constellation',
     });
 
     deck.push({
@@ -271,6 +295,11 @@ export default function StoryDeck() {
       subtext: "You never have to be alone again. ❤️"
     });
 
+    deck.push({
+      id: 'bucket-list-plans',
+      type: 'bucket-list',
+    });
+
     deck.push({ id: 'hug', type: 'hug' });
 
     deck.push({
@@ -308,6 +337,11 @@ export default function StoryDeck() {
     const chunks = config.birthdayMessage.split('\n\n');
     chunks.forEach((c, i) => {
       deck.push({ id: `bday-chunk-${i}`, type: 'text', content: c, align: 'left' });
+    });
+
+    deck.push({
+      id: 'voice-note-bday',
+      type: 'voice-note',
     });
 
     deck.push({
@@ -425,6 +459,9 @@ export default function StoryDeck() {
     if (currentSlide.type === 'riddle' && !unlocked[currentIndex]) return false;
     if (currentSlide.type === 'hug' && !unlocked[currentIndex]) return false;
     if (currentSlide.type === 'promise' && !unlocked[currentIndex]) return false;
+    if (currentSlide.type === 'flashlight' && !unlocked[currentIndex]) return false;
+    if (currentSlide.type === 'constellation' && !unlocked[currentIndex]) return false;
+    if (currentSlide.type === 'bucket-list' && !unlocked[currentIndex]) return false;
 
     return true;
   };
@@ -571,6 +608,30 @@ export default function StoryDeck() {
             clickCount={lastSlideClicks}
           />
         );
+      case 'flashlight':
+        return <FlashlightSlide onUnlock={unlockCurrent} onNext={handleForceNext} />;
+      case 'bucket-list':
+        return <BucketListSlide onUnlock={unlockCurrent} onNext={handleForceNext} />;
+      case 'constellation':
+        return <ConstellationSlide onUnlock={unlockCurrent} onNext={handleForceNext} />;
+      case 'voice-note':
+        return (
+          <VoiceNoteSlide
+            onUnlock={unlockCurrent}
+            onNext={handleForceNext}
+            onAudioPlay={() => {
+              if (audioRef.current) {
+                audioRef.current.pause();
+                setIsPlaying(false);
+              }
+            }}
+            onAudioPause={() => {
+              if (audioRef.current) {
+                audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+              }
+            }}
+          />
+        );
 
       default:
         return null;
@@ -578,7 +639,7 @@ export default function StoryDeck() {
   };
 
   const isHeyYouSlide = currentSlide?.id === 'intro-1';
-  const isDarkSlide = currentSlide?.type === 'creation';
+  const isDarkSlide = currentSlide?.type === 'creation' || currentSlide?.type === 'flashlight' || currentSlide?.type === 'constellation' || currentSlide?.type === 'bucket-list';
 
   return (
     <div className="fixed inset-0 bg-[#F5F2EB] flex items-center justify-center sm:p-6 overflow-hidden">
@@ -752,7 +813,13 @@ export default function StoryDeck() {
                     ? 'Tap Hug 🤗'
                     : currentSlide.type === 'promise'
                       ? 'Keep Promise 🤞'
-                      : 'Pick answer 🌻'
+                      : currentSlide.type === 'flashlight'
+                        ? 'Scratch photo 🪄'
+                        : currentSlide.type === 'constellation'
+                          ? 'Connect stars ✨'
+                          : currentSlide.type === 'bucket-list'
+                            ? 'Promise all 4 🤞'
+                            : 'Pick answer 🌻'
                   : currentIndex === slides.length - 1
                     ? lastSlideClicks === 1
                       ? 'Tap again 🔄'
